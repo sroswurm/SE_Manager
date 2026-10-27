@@ -1,0 +1,36 @@
+From: Ray Delgado <ray@coastalcanvas.example>
+To: engineer@examplestructural.example
+Cc: Tina Delgado <billing@coastalcanvas.example>
+Date: Wed, 14 Oct 2026 14:31:09 -0400
+Subject: RFQ - Shem Creek Oyster Bar retractable awnings - delegated design
+Attachments: CCMW_ShemCreek_awning_shops_r0.pdf (6.8 MB), ShemCreek_wall_photos.zip (22 MB), Markilux_8800_tech_data.pdf (1.9 MB)
+
+Afternoon,
+
+Got another delegated design job for you, similar to the Goose Creek canopy but smaller and a different animal structurally.
+
+Project: Shem Creek Oyster Bar, 1330 Shrimp Boat Ln, Mount Pleasant. Existing one-story CMU restaurant building, waterfront. Owner wants three motorized retractable awnings on the creek side deck:
+
+  - Awning A: 24'-0" wide x 20'-0" projection
+  - Awning B: 24'-0" wide x 20'-0" projection
+  - Awning C: 16'-0" wide x 13'-0" projection
+
+All Markilux 8800 cassette units, lateral arm type. Manufacturer data attached, including their wind class ratings and the sensor retract setting we'd spec. Units mount to the CMU wall at about 11'-6" AFF on our aluminum wall bracket assembly (6061-T6), shop drawings rev 0 attached. Anchors shown are 5/8" Hilti HIT-HY 270 adhesive into grouted cells but we haven't verified which cells are grouted; photos of the wall are in the zip, there's some hairline cracking near the east end you should look at.
+
+What we need from you:
+
+  1. Sealed calcs for the brackets and wall anchorage, deployed and retracted conditions. Town of Mount Pleasant is going to want to see the deployed case with whatever wind the manufacturer allows before auto retract, and the full code wind in the retracted position. Same way we did the Daniel Island job.
+  2. Anchor detail we can put on our shops.
+  3. Your delegated design letter addressed to the owner's architect (there's no EOR on this one, it's a tenant upfit permit, so it'll go to the town directly).
+  4. A look at whether the existing CMU wall can take the reactions. If you think it needs a steel channel or something behind it tell me now so I can price it.
+
+Flood zone is AE I believe, 13 ft BFE, not that it matters much for a wall mount but the town will ask.
+
+Owner wants to be open for the holidays so we're trying to have the permit in by Nov 10. Can you give me a number and a turnaround by Friday? We'll issue a PO same as always, net 45.
+
+Thanks Ray
+
+Ray Delgado | Project Manager
+Coastal Canvas & Metal Works
+7710 Dorchester Rd, North Charleston SC 29418
+Office 843-555-0200 | Cell 843-555-0201

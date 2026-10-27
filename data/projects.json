@@ -1,0 +1,288 @@
+{
+  "schema_version": "0.1.0",
+  "projects": [
+    {
+      "client_id": "fde480bc-88fd-5ccf-ae2e-731d9eaac4b9",
+      "client_status": "existing",
+      "location": {
+        "street": "9 Wentworth Ct",
+        "city": "Charleston",
+        "state": "SC",
+        "zip": "29401",
+        "county": "Charleston"
+      },
+      "structural_material": [
+        "Wood",
+        "Steel"
+      ],
+      "scope": "Structural design for a single-story rear kitchen addition (approx. 320 SF) to a c.1910 wood-framed residence on the Charleston peninsula, including new pier-and-beam foundation, floor and roof framing, removal of an existing exterior bearing wall with a new flush steel beam, and lateral tie-in to the existing structure. BAR submittal support limited to structural notes.",
+      "deliverables": [
+        "sealed structural drawings",
+        "structural calculation package",
+        "one framing site visit with letter"
+      ],
+      "fee_type": "Lump Sum",
+      "project_id": "19e70c5c-61da-4c12-b039-db3973789cab"
+    },
+    {
+      "client_id": "fde480bc-88fd-5ccf-ae2e-731d9eaac4b9",
+      "client_status": "existing",
+      "location": {
+        "street": "618 King St",
+        "city": "Charleston",
+        "state": "SC",
+        "zip": "29403",
+        "county": "Charleston"
+      },
+      "structural_material": [
+        "Steel",
+        "Masonry",
+        "Concrete"
+      ],
+      "scope": "Structural design for a new steel-framed mezzanine (approx. 1,100 SF) within an existing two-story masonry commercial building, including new columns on spread footings cut through the existing slab, composite deck floor, stair and guard attachment, and evaluation of existing masonry bearing walls for added reactions. Existing roof to remain.",
+      "deliverables": [
+        "sealed structural drawings",
+        "structural calculation package",
+        "existing conditions assessment memo",
+        "two construction site visits"
+      ],
+      "fee_type": "Lump Sum",
+      "project_id": "7c36a0d4-35c0-4054-9a3d-a979ece78e57"
+    },
+    {
+      "client_id": "bcf80fad-8451-5a37-a20c-3500e4c91090",
+      "client_status": "existing",
+      "location": {
+        "street": "200 Foster Creek Rd",
+        "city": "Goose Creek",
+        "state": "SC",
+        "zip": "29445",
+        "county": "Berkeley"
+      },
+      "structural_material": [
+        "Aluminum",
+        "Concrete"
+      ],
+      "scope": "Delegated structural design of a fabricator-supplied aluminum walkway canopy system (approx. 14 ft x 160 ft) between the gymnasium and classroom wing, including extruded aluminum frames, purlins, standing seam roof panel attachment, column base plates, and anchorage to EOR-designed concrete piers. Risk Category III per educational occupancy. Deliverables stamped by the specialty engineer and submitted to the EOR for review.",
+      "deliverables": [
+        "sealed calculation package",
+        "sealed shop drawing review stamp",
+        "delegated design letter",
+        "anchor reactions table for EOR"
+      ],
+      "fee_type": "Lump Sum",
+      "project_id": "0cd9b583-4866-462c-8a97-d09a59bcf427"
+    },
+    {
+      "client_id": "d49be7dd-59f0-505e-a7a2-70ea460fa99d",
+      "client_status": "new",
+      "location": {
+        "street": "7395 Ashley Phosphate Rd",
+        "city": "North Charleston",
+        "state": "SC",
+        "zip": "29418",
+        "county": "Charleston"
+      },
+      "structural_material": [
+        "Steel",
+        "Cold-Formed Steel"
+      ],
+      "scope": "Wind uplift analysis and fastener pattern design for a mechanically attached single-ply membrane re-roof over existing steel deck on a 42,000 SF pre-engineered metal warehouse. Includes component and cladding pressures by roof zone per ASCE 7-16, fastener and plate pull-out capacity check against manufacturer data and existing deck gauge, edge metal attachment per ANSI/SPRI ES-1, and a sealed attachment letter for permit.",
+      "deliverables": [
+        "sealed roof attachment letter",
+        "fastener pattern diagram by zone",
+        "calculation package"
+      ],
+      "fee_type": "Lump Sum",
+      "project_id": "6a6b8f8c-12bf-4aa2-a0ea-72e6fd859cbd"
+    },
+    {
+      "client_id": "e7c87972-23ce-573c-aaae-b93a834dde72",
+      "client_status": "new",
+      "location": {
+        "street": "1622 Fort Johnson Rd",
+        "city": "Charleston",
+        "state": "SC",
+        "zip": "29412",
+        "county": "Charleston"
+      },
+      "structural_material": [
+        "Wood"
+      ],
+      "scope": "Structural design for removal of approx. 18 ft of interior bearing wall between kitchen and living room in a 1978 single-story wood-framed ranch on slab, including a new flush LVL header, bearing posts, load path to existing footings with verification pits, and temporary shoring notes. Includes one post-framing inspection.",
+      "deliverables": [
+        "sealed structural drawing (1 sheet)",
+        "calculation summary",
+        "framing inspection letter"
+      ],
+      "fee_type": "Lump Sum",
+      "project_id": "dc9b8404-38c3-4eaa-8202-daa59846a073"
+    },
+    {
+      "client_id": "536bcb1c-1c38-5635-9d32-8738213beef1",
+      "client_status": "new",
+      "location": {
+        "street": "418 Laurel St",
+        "city": "Summerville",
+        "state": "SC",
+        "zip": "29483",
+        "county": "Dorchester"
+      },
+      "structural_material": [
+        "Wood"
+      ],
+      "scope": "Site observation and sealed repair letter for second-floor 2x10 joists over-notched by a plumbing subcontractor at a residential renovation under inspection hold. Includes sister/strap repair detail and verification that the repaired members meet code capacity.",
+      "deliverables": [
+        "sealed assessment and repair letter",
+        "repair detail sketch"
+      ],
+      "fee_type": "Not To Exceed",
+      "project_id": "7a2db83a-0d89-4d40-a23f-a742f1e74b45"
+    },
+    {
+      "client_id": "59365542-a56f-58f3-9c6a-d998a9266145",
+      "client_status": "new",
+      "location": {
+        "street": "2618 Atlantic Ave",
+        "city": "Sullivan's Island",
+        "state": "SC",
+        "zip": "29482",
+        "county": "Charleston"
+      },
+      "structural_material": [
+        "Wood",
+        "Concrete"
+      ],
+      "scope": "Full structural design for a new 3,400 SF two-story wood-framed single-family residence elevated on timber piles in a VE flood zone on Sullivan's Island, including pile layout and capacities, pile caps and grade beams, breakaway wall provisions, floor and roof framing, continuous load path and uplift connection schedule, and engineered shear wall design for 155 mph Exposure D wind.",
+      "deliverables": [
+        "sealed structural drawings",
+        "structural calculation package",
+        "pile driving criteria and inspection",
+        "three construction site visits"
+      ],
+      "fee_type": "Lump Sum",
+      "project_id": "6461c4cd-a04d-4d1b-868d-bdeb07c2fed0"
+    },
+    {
+      "client_id": "f05aabc5-53c0-592e-81f0-0b9880f2ae14",
+      "client_status": "new",
+      "location": {
+        "street": "1950 Savannah Hwy",
+        "city": "Charleston",
+        "state": "SC",
+        "zip": "29407",
+        "county": "Charleston"
+      },
+      "structural_material": [
+        "Cold-Formed Steel",
+        "Steel",
+        "Concrete"
+      ],
+      "scope": "Structural design for a new two-story, 12-key guest annex (approx. 7,800 SF) behind an existing inn, including shallow foundations on improved soils per geotech, light-gauge steel bearing walls with composite steel floor, open-web steel roof joists, exterior covered walkways, and lateral system design for SDC D. Coordination with civil for site retaining wall up to 4 ft is included; walls over 4 ft excluded.",
+      "deliverables": [
+        "sealed structural drawings",
+        "structural calculation package",
+        "specifications (Div 03, 05)",
+        "shop drawing review",
+        "construction administration (hourly)"
+      ],
+      "fee_type": "Lump Sum",
+      "project_id": "340682be-1b25-4f65-8def-462a8a8f2baf"
+    },
+    {
+      "client_id": "056a5f65-b32c-5957-ae85-23e625052520",
+      "client_status": "new",
+      "location": {
+        "street": "Bldg CEP-204, Naval Station Norfolk",
+        "city": "Norfolk",
+        "state": "VA",
+        "zip": "23511",
+        "county": "Norfolk City"
+      },
+      "structural_material": [
+        "Steel",
+        "Concrete"
+      ],
+      "scope": "Structural design of an exterior elevated steel equipment platform (approx. 24 ft x 40 ft, 14 ft clear) supporting two replacement chillers at an existing central energy plant on a Navy installation, including drilled pier foundations, braced-frame lateral system, grating and removable panels, maintenance crane rail evaluation, and anti-terrorism standoff review per UFC 4-010-01. Design-build; drawings sealed by a VA PE and submitted at 65% and 100% design per the contract.",
+      "deliverables": [
+        "sealed structural drawings (VA)",
+        "structural calculation package",
+        "UFC compliance narrative",
+        "design analysis sections",
+        "DrChecks comment responses"
+      ],
+      "fee_type": "Lump Sum",
+      "project_id": "ab1a9a13-2732-4670-894d-c2afa2c31ce7"
+    },
+    {
+      "client_id": "bcf80fad-8451-5a37-a20c-3500e4c91090",
+      "client_status": "existing",
+      "location": {
+        "street": "1330 Shrimp Boat Ln",
+        "city": "Mount Pleasant",
+        "state": "SC",
+        "zip": "29464",
+        "county": "Charleston"
+      },
+      "structural_material": [
+        "Aluminum",
+        "Masonry"
+      ],
+      "scope": "Delegated design of fabricator-supplied aluminum frames and wall anchorage for three motorized retractable awnings (up to 20 ft projection) on a waterfront restaurant, including wind design in retracted and deployed positions with manufacturer deployment limits, lateral arm reactions, ledger and anchor design into existing CMU, and review of the existing wall for added loads.",
+      "deliverables": [
+        "sealed calculation package",
+        "anchorage detail",
+        "delegated design letter"
+      ],
+      "fee_type": "Lump Sum",
+      "project_id": "ad8b1211-afd7-441d-8721-0a47eb51ade7"
+    },
+    {
+      "client_id": "f05aabc5-53c0-592e-81f0-0b9880f2ae14",
+      "client_status": "existing",
+      "location": {
+        "street": "1950 Savannah Hwy",
+        "city": "Charleston",
+        "state": "SC",
+        "zip": "29407",
+        "county": "Charleston"
+      },
+      "structural_material": [
+        "Wood"
+      ],
+      "scope": "Forensic structural assessment of a 60 ft long wood-framed second-floor guest balcony exhibiting visible sag and soft decking at an existing 1990s inn, including non-destructive and limited destructive investigation, moisture and decay mapping, load rating of existing framing, immediate safety recommendations (shoring or closure), and a sealed report with repair options and rough order of magnitude costs.",
+      "deliverables": [
+        "sealed investigation report",
+        "interim safety memo",
+        "repair option sketches"
+      ],
+      "fee_type": "Not To Exceed",
+      "project_id": "4d87c6ba-47cc-4dc2-b028-d51fc875e24b"
+    },
+    {
+      "client_id": "fde480bc-88fd-5ccf-ae2e-731d9eaac4b9",
+      "client_status": "existing",
+      "location": {
+        "street": "327 Pitt St",
+        "city": "Mount Pleasant",
+        "state": "SC",
+        "zip": "29464",
+        "county": "Charleston"
+      },
+      "structural_material": [
+        "Wood",
+        "Masonry",
+        "Concrete"
+      ],
+      "scope": "Structural design for a full second-story addition over an existing one-story 1955 brick veneer ranch in the Old Village, Mount Pleasant, including evaluation of existing CMU stem wall and footing capacity (verification pits), new floor framing over existing ceiling, new roof, and a complete lateral load path for the taller structure in 155 mph wind. Existing slab-on-grade to remain.",
+      "deliverables": [
+        "sealed structural drawings",
+        "structural calculation package",
+        "existing foundation evaluation memo",
+        "two site visits"
+      ],
+      "fee_type": "Lump Sum",
+      "project_id": "70e38f7e-43b6-4b37-8cc7-b3583687789b"
+    }
+  ]
+}

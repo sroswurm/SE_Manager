@@ -1,0 +1,31 @@
+From: Dana Reyes <dreyes@meridianfed.example>
+To: engineer@examplestructural.example
+Date: Thu, 3 Sep 2026 08:40:11 -0400
+Subject: Structural sub needed - NS Norfolk CEP-204 chiller platform (design-build)
+Attachments: MFB_CEP204_RFP_excerpts.pdf (3.4 MB)
+
+Hello,
+
+Pete Lindqvist gave me your name. We used to work together and he says you are licensed in Virginia and have done Navy work. I'm the program manager at Meridian Federal Builders. We are the design-build prime on a chiller replacement at the central energy plant, Building CEP-204, Naval Station Norfolk, VA 23511. We have not worked together before.
+
+We need a structural engineer to design an exterior elevated steel platform to carry the two new chillers. The scope as I understand it:
+
+- Platform about 24 ft x 40 ft with 14 ft of clear height underneath
+- Drilled pier foundations
+- Braced frame lateral system
+- Grating with removable panels for equipment access
+- Evaluation of the existing maintenance crane rail that the new equipment will sit near
+- Antiterrorism standoff review per UFC 4-010-01
+
+The contract requires submittals at 65% and 100% through DrChecks, a UFC compliance narrative, and a design analysis. All drawings must be sealed by a Virginia PE. You would be our subcontractor, not the Navy's.
+
+I've attached the relevant RFP excerpts. The 65% submittal is due October 30. Before I send a subcontract I need:
+
+- Your Virginia license number
+- Your professional liability limits
+- A lump sum price covering design through 100% and our responses to the review comments
+
+Dana Reyes
+Program Manager, Meridian Federal Builders Inc.
+5800 Thurston Ave, Bldg 4, Virginia Beach VA 23455
+757-555-0150

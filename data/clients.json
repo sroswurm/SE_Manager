@@ -1,0 +1,263 @@
+{
+  "schema_version": "0.1.0",
+  "clients": [
+    {
+      "client_id": "fde480bc-88fd-5ccf-ae2e-731d9eaac4b9",
+      "entity": "Palmetto Line Architecture",
+      "type": "architect",
+      "address": {
+        "street": "212 Meeting St",
+        "unit": "3rd Floor",
+        "city": "Charleston",
+        "state": "SC",
+        "zip": "29401",
+        "county": "Charleston"
+      },
+      "contacts": [
+        {
+          "name": "Marisol Tran",
+          "title": "Principal",
+          "email": "mtran@palmettoline.example",
+          "phone": "843-555-0118",
+          "address": null
+        },
+        {
+          "name": "Devin Hollis",
+          "title": "Project Architect",
+          "email": "dhollis@palmettoline.example",
+          "phone": "843-555-0119",
+          "address": null
+        },
+        {
+          "name": "Kelly Boone",
+          "title": "Office Manager",
+          "email": "ap@palmettoline.example",
+          "phone": "843-555-0110",
+          "address": null
+        }
+      ],
+      "billing_contact_index": 2,
+      "default_terms_days": 30,
+      "referral_source": "SEA of Charleston meeting",
+      "first_job": "25-0007",
+      "notes": "Sends 4-6 residential and small commercial jobs a year. Likes a fee range before a formal proposal."
+    },
+    {
+      "client_id": "59365542-a56f-58f3-9c6a-d998a9266145",
+      "entity": "Saltmarsh Design Studio",
+      "type": "architect",
+      "address": {
+        "street": "1480 Ben Sawyer Blvd",
+        "unit": "Suite B",
+        "city": "Mount Pleasant",
+        "state": "SC",
+        "zip": "29464",
+        "county": "Charleston"
+      },
+      "contacts": [
+        {
+          "name": "Owen Pruitt",
+          "title": "Owner / Architect",
+          "email": "owen@saltmarshdesign.example",
+          "phone": "843-555-0162",
+          "address": null
+        }
+      ],
+      "billing_contact_index": 0,
+      "default_terms_days": 30,
+      "referral_source": "fde480bc-88fd-5ccf-ae2e-731d9eaac4b9",
+      "first_job": "26-0038",
+      "notes": "Coastal residential specialist. Expects flood and wind criteria called out explicitly in proposals."
+    },
+    {
+      "client_id": "bcf80fad-8451-5a37-a20c-3500e4c91090",
+      "entity": "Coastal Canvas & Metal Works",
+      "type": "fabricator",
+      "address": {
+        "street": "7710 Dorchester Rd",
+        "unit": null,
+        "city": "North Charleston",
+        "state": "SC",
+        "zip": "29418",
+        "county": "Charleston"
+      },
+      "contacts": [
+        {
+          "name": "Ray Delgado",
+          "title": "Project Manager",
+          "email": "ray@coastalcanvas.example",
+          "phone": "843-555-0201",
+          "address": null
+        },
+        {
+          "name": "Tina Delgado",
+          "title": "Accounts",
+          "email": "billing@coastalcanvas.example",
+          "phone": "843-555-0200",
+          "address": null
+        }
+      ],
+      "billing_contact_index": 1,
+      "default_terms_days": 45,
+      "referral_source": "Cold inquiry via website",
+      "first_job": "25-0021",
+      "notes": "Delegated design for aluminum awnings and canopies. Sends shop drawing packages; needs sealed calcs plus a delegated design letter per project."
+    },
+    {
+      "client_id": "536bcb1c-1c38-5635-9d32-8738213beef1",
+      "entity": "Greer & Daughters Construction",
+      "type": "contractor",
+      "address": {
+        "street": "305 N Cedar St",
+        "unit": null,
+        "city": "Summerville",
+        "state": "SC",
+        "zip": "29483",
+        "county": "Dorchester"
+      },
+      "contacts": [
+        {
+          "name": "Hank Greer",
+          "title": "Owner",
+          "email": "hank@greerbuilds.example",
+          "phone": "843-555-0247",
+          "address": null
+        }
+      ],
+      "billing_contact_index": 0,
+      "default_terms_days": 15,
+      "referral_source": "fde480bc-88fd-5ccf-ae2e-731d9eaac4b9",
+      "first_job": "26-0034",
+      "notes": "Calls when an inspector holds a job. Needs fast turnaround letters. Pays on receipt."
+    },
+    {
+      "client_id": "e7c87972-23ce-573c-aaae-b93a834dde72",
+      "entity": "Nadia and Tom Okafor",
+      "type": "owner",
+      "address": {
+        "street": "1622 Fort Johnson Rd",
+        "unit": null,
+        "city": "Charleston",
+        "state": "SC",
+        "zip": "29412",
+        "county": "Charleston"
+      },
+      "contacts": [
+        {
+          "name": "Nadia Okafor",
+          "title": null,
+          "email": "nadia.okafor@example.com",
+          "phone": "843-555-0310",
+          "address": null
+        },
+        {
+          "name": "Tom Okafor",
+          "title": null,
+          "email": "tom.okafor@example.com",
+          "phone": "843-555-0311",
+          "address": null
+        }
+      ],
+      "billing_contact_index": 0,
+      "default_terms_days": 15,
+      "referral_source": "Neighbor referral",
+      "first_job": "26-0031",
+      "notes": "Homeowners. First time hiring an engineer; needed plain-language explanation of deliverables."
+    },
+    {
+      "client_id": "f05aabc5-53c0-592e-81f0-0b9880f2ae14",
+      "entity": "Ashley River Hospitality LLC",
+      "type": "developer",
+      "address": {
+        "street": "1890 Sam Rittenberg Blvd",
+        "unit": "Suite 210",
+        "city": "Charleston",
+        "state": "SC",
+        "zip": "29407",
+        "county": "Charleston"
+      },
+      "contacts": [
+        {
+          "name": "Priya Venkataraman",
+          "title": "Development Manager",
+          "email": "priya@ashleyriverhosp.example",
+          "phone": "843-555-0405",
+          "address": null
+        },
+        {
+          "name": "Marcus Bell",
+          "title": "Controller",
+          "email": "ap@ashleyriverhosp.example",
+          "phone": "843-555-0400",
+          "address": null
+        }
+      ],
+      "billing_contact_index": 1,
+      "default_terms_days": 30,
+      "referral_source": "59365542-a56f-58f3-9c6a-d998a9266145",
+      "first_job": "26-0041",
+      "notes": "Owns two inns in West Ashley. New construction plus an open forensic matter on an existing balcony."
+    },
+    {
+      "client_id": "056a5f65-b32c-5957-ae85-23e625052520",
+      "entity": "Meridian Federal Builders Inc.",
+      "type": "contractor",
+      "address": {
+        "street": "5800 Thurston Ave",
+        "unit": "Bldg 4",
+        "city": "Virginia Beach",
+        "state": "VA",
+        "zip": "23455",
+        "county": "Virginia Beach City"
+      },
+      "contacts": [
+        {
+          "name": "Lt. Col. (Ret.) Dana Reyes",
+          "title": "Program Manager",
+          "email": "dreyes@meridianfed.example",
+          "phone": "757-555-0150",
+          "address": null
+        },
+        {
+          "name": "Subcontracts Desk",
+          "title": null,
+          "email": "subk@meridianfed.example",
+          "phone": "757-555-0151",
+          "address": null
+        }
+      ],
+      "billing_contact_index": 1,
+      "default_terms_days": 45,
+      "referral_source": "Former colleague",
+      "first_job": "26-0044",
+      "notes": "Design-build prime on Navy facility work. Requires UFC compliance, DD1354 support, and a VA PE seal."
+    },
+    {
+      "client_id": "d49be7dd-59f0-505e-a7a2-70ea460fa99d",
+      "entity": "TopSeal Roofing Systems",
+      "type": "contractor",
+      "address": {
+        "street": "4120 Azalea Dr",
+        "unit": null,
+        "city": "North Charleston",
+        "state": "SC",
+        "zip": "29405",
+        "county": "Charleston"
+      },
+      "contacts": [
+        {
+          "name": "Jorge Castillo",
+          "title": "Estimator",
+          "email": "jorge@topsealroofing.example",
+          "phone": "843-555-0288",
+          "address": null
+        }
+      ],
+      "billing_contact_index": 0,
+      "default_terms_days": 30,
+      "referral_source": "Manufacturer rep",
+      "first_job": "26-0027",
+      "notes": "Commercial re-roofs. Needs wind uplift / fastener pattern analysis and a sealed attachment letter for permit."
+    }
+  ]
+}

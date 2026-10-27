@@ -1,0 +1,28 @@
+From: Ray Delgado <ray@coastalcanvas.example>
+To: engineer@examplestructural.example
+Date: Tue, 28 Apr 2026 10:12:44 -0400
+Subject: RFQ - Goose Creek Middle walkway canopy - delegated design (spec 10 73 16)
+Attachments: CCMW_GCMS_shop_dwgs_r0.pdf (5.9 MB), GCMS_S-sheets_EOR_IFC.pdf (8.2 MB)
+
+Morning,
+
+We got the canopy package at Goose Creek Middle School and I need a delegated design engineer. Same setup as the Hanahan bus shelters you did for us last year, just bigger.
+
+Project: covered walkway between the gym and the classroom wing at 200 Foster Creek Rd, Goose Creek. 14 ft wide and about 160 ft long. Extruded aluminum columns and beams at roughly 20 ft on center, aluminum purlins, standing seam roof panels, and base plates anchored to concrete piers. Our shop drawings are rev 0, attached.
+
+The EOR is Tidewater Structural Group. Their sheets are attached too and have the pier design and the loads they gave us. Because it is a school the canopy is Risk Category III, and the spec (10 73 16) wants:
+
+- Sealed calc package from an SC PE
+- A review stamp on our shop drawings
+- A delegated design letter
+- A table of anchor reactions at every column so the EOR can check their piers
+
+Submittal is due to the GC (Harwell Construction Group) on May 20. Can you give me a flat price and a turnaround? We will issue a PO, net 45, like always.
+
+Thanks,
+Ray
+
+Ray Delgado | Project Manager
+Coastal Canvas & Metal Works
+7710 Dorchester Rd, North Charleston SC 29418
+Office 843-555-0200 | Cell 843-555-0201
