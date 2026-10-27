@@ -164,6 +164,7 @@ const actions = {
           out.fee = feeFor(db, project, getConfig());
           out.project.assumptions = lines(project.assumptions);
           out.project.exclusions = lines(project.exclusions);
+          out.project.scope_of_services = lines(project.scope_of_services);
         }
         return out;
       });
@@ -340,9 +341,10 @@ const actions = {
   },
 
   set_scope: {
-    description: "Step 5 — Define deliverables / scope lines (drawings, calculations, drafting, letters, reports, inspections, CA…), plus assumptions and exclusions. replace=true (default) replaces all existing lines.",
+    description: "Step 5 — Define deliverables / scope lines (drawings, calculations, drafting, letters, reports, inspections, CA…), plus scope of services toggles, assumptions and exclusions. replace=true (default) replaces all existing lines.",
     input: {
       project_no: z.string(), lines: z.array(lineSchema),
+      scope_of_services: z.array(z.string()).optional().describe("Keys of selected scope-of-services items from config"),
       assumptions: z.array(z.string()).optional(), exclusions: z.array(z.string()).optional(),
       description: z.string().optional(), replace: z.boolean().optional(),
     },
@@ -362,6 +364,7 @@ const actions = {
         if (assumptions) p.assumptions = assumptions.join("\n");
         if (exclusions) p.exclusions = exclusions.join("\n");
         if (description !== undefined) p.description = description;
+        if (scope_of_services) p.scope_of_services = scope_of_services.join("\n");
         p.updated = stamp();
         db.log(project_no, "set_scope", `${input.length} line(s)`);
         // If a fee was already saved, re-price it with the same method choices so stored totals don't go stale.
@@ -472,7 +475,7 @@ const actions = {
 
         const rev = Number(p.proposal_rev || 0) + (p.proposal_path ? 1 : 0);
         const date = today();
-        const buf = await buildProposalPdf({ cfg, project: { ...p, assumptions: lines(p.assumptions), exclusions: lines(p.exclusions) }, client, lead, fee, milestones: ms, rev, date });
+        const buf = await buildProposalPdf({ cfg, project: { ...p, assumptions: lines(p.assumptions), exclusions: lines(p.exclusions), scope_of_services: lines(p.scope_of_services) }, client, lead, fee, milestones: ms, rev, date });
         const dir = p.folder_path && fs.existsSync(p.folder_path)
           ? path.join(p.folder_path, safeName(cfg.proposal_folder || ""))
           : path.join(APP_DIR, "data", "proposals");

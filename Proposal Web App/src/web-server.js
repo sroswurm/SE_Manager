@@ -12,6 +12,31 @@ const { saveDoc, deleteDoc, docPath } = require("./documents");
 
 const app = express();
 app.use(express.json({ limit: "2mb" }));
+
+// Dashboard: outcomes + client names from the Data Model directory.
+app.get("/api/dashboard", (req, res) => {
+  try {
+    const dataDir = path.resolve(__dirname, "..", "..", "Data Model");
+    const outPath = path.join(dataDir, "outcomes.json");
+    const cliPath = path.join(dataDir, "clients.json");
+    if (!fs.existsSync(outPath)) return res.status(404).json({ error: `outcomes.json not found at ${outPath}` });
+    if (!fs.existsSync(cliPath)) return res.status(404).json({ error: `clients.json not found at ${cliPath}` });
+    const outcomes = JSON.parse(fs.readFileSync(outPath, "utf-8")).outcomes;
+    const clients = JSON.parse(fs.readFileSync(cliPath, "utf-8")).clients;
+    const projPath = path.join(dataDir, "projects.json");
+    const projects = fs.existsSync(projPath) ? JSON.parse(fs.readFileSync(projPath, "utf-8")).projects : [];
+    const clientMap = Object.fromEntries(clients.map((c) => [c.client_id, c.entity]));
+    const projMap = Object.fromEntries(projects.filter((p) => p.job_number).map((p) => [p.job_number, p.name]));
+    const enriched = outcomes.map((o) => ({
+      ...o,
+      client_name: clientMap[o.client_id] || "Unknown",
+      project_name: projMap[o.job_number] || null,
+      effective_rate: o.hours_spent > 0 ? Math.round((o.final_fee || o.quoted_fee || 0) / o.hours_spent * 100) / 100 : null,
+    }));
+    res.json({ outcomes: enriched });
+  } catch (e) { res.status(500).json({ error: `Dashboard error: ${e.message}` }); }
+});
+
 app.use(express.static(path.join(__dirname, "..", "public")));
 
 app.get("/api/actions", (_req, res) => res.json(Object.fromEntries(Object.entries(actions).map(([k, a]) => [k, a.description]))));
@@ -56,7 +81,7 @@ app.get("/api/preview/:no", async (req, res) => {
       const fee = estimateFee({ project: p, lines: scope, history: db.tables.FeeHistory, cfg, options: opts });
       const ms = db.tables.Milestones.filter((m) => String(m.project_no) === String(p.project_no)).sort((a, b) => a.milestone - b.milestone);
       const rev = Number(p.proposal_rev || 0) + (p.proposal_path ? 1 : 0);
-      return buildProposalPdf({ cfg, project: { ...p, assumptions: lines(p.assumptions), exclusions: lines(p.exclusions) }, client, lead, fee, milestones: ms, rev, date: new Date().toLocaleDateString("en-CA") });
+      return buildProposalPdf({ cfg, project: { ...p, assumptions: lines(p.assumptions), exclusions: lines(p.exclusions), scope_of_services: lines(p.scope_of_services) }, client, lead, fee, milestones: ms, rev, date: new Date().toLocaleDateString("en-CA") });
     });
     res.type("application/pdf").set("Content-Disposition", `inline; filename="${req.params.no} preview.pdf"`).send(buf);
   } catch (e) { res.status(400).send(e.message); }

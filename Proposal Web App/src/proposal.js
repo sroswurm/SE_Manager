@@ -111,10 +111,27 @@ function buildProposalPdf({ cfg, project, client, lead, fee, milestones, rev, da
       project.expedite && project.expedite !== "Standard" && `Schedule: ${project.expedite}`].filter(Boolean);
     if (facts.length) { doc.moveDown(0.4); doc.fillColor(GREY).fontSize(9).text(facts.join("   ·   ")); doc.fillColor("#111").fontSize(10); }
 
-    // 2. Scope
+    // 2. Scope of services
     heading("Scope of Services");
+    const sosKeys = (project.scope_of_services || []);
+    const sosCfg = cfg.proposal.scope_of_services || [];
+    const sosItems = sosCfg.filter((s) => sosKeys.includes(s.key)).map((s) => {
+      let txt = s.text;
+      if (txt.includes("${visit_rate}")) {
+        const visitType = cfg.deliverable_types.find((d) => d.type === "Site Visit / Field Observation");
+        const rate = visitType ? money(visitType.hours * (cfg.rates[visitType.rate] || cfg.rates.engineering)) : money(cfg.rates.engineering * 3);
+        txt = txt.replace("${visit_rate}", rate);
+      }
+      return txt;
+    });
+    if (sosItems.length) {
+      doc.text(`${firm.short} proposes to provide the following structural engineering services:`);
+      doc.moveDown(0.3);
+      bullets(sosItems, true);
+      doc.moveDown(0.3);
+    }
     const designItems = fee.design_lines.map((l) => (l.description ? `${l.type}: ${l.description}` : l.type));
-    if (designItems.length) { doc.text("TNSE will provide the following design services:"); doc.moveDown(0.3); bullets(designItems, true); }
+    if (designItems.length) { doc.text("Deliverables included in the design fee:"); doc.moveDown(0.3); bullets(designItems, true); }
     if (fee.addon_lines.length) {
       doc.moveDown(0.3).text("The following services will be provided as requested and billed as performed:");
       doc.moveDown(0.3);

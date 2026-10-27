@@ -95,13 +95,29 @@
   dialog .bd { padding: 16px 20px; max-height: 70vh; overflow: auto; }
   iframe.pdf { width: 100%; height: 75vh; border: 1px solid var(--rule); border-radius: 4px; background: #fff; }
   .mono { font-family: var(--mono); font-size: 12.5px; word-break: break-all; }
-  @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } aside { position: static; max-height: none; } .folders { columns: 1; } .method { grid-template-columns: 22px 1fr 100px; } .method .bar { display: none; } }
+  .dash-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .stat { background: var(--card); border: 1px solid var(--rule); border-radius: 6px; padding: 14px 16px; }
+  .stat-val { font: 700 22px var(--mono); color: var(--navy); }
+  .stat-val.ok { color: var(--ok); } .stat-val.warn { color: var(--warn); } .stat-val.bad { color: var(--bad); }
+  .stat-lbl { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-top: 2px; }
+  .outcome-bar { display: flex; height: 32px; border-radius: 4px; overflow: hidden; margin: 8px 0; }
+  .outcome-bar div { display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #fff; transition: width .3s; }
+  .dash-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .burn-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--rule-2); font-size: 13px; }
+  .burn-row .lbl { width: 200px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .burn-row .bar { flex: 1; } .burn-row .val { width: 90px; text-align: right; font: 12px var(--mono); color: var(--muted); flex-shrink: 0; }
+  .hbar-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--rule-2); font-size: 13px; }
+  .hbar-row .lbl { width: 200px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .hbar-row .bar { flex: 1; } .hbar-row .val { width: 80px; text-align: right; font: 12px var(--mono); color: var(--muted); flex-shrink: 0; }
+  td .chip { font-size: 10px; }
+  @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } aside { position: static; max-height: none; } .folders { columns: 1; } .method { grid-template-columns: 22px 1fr 100px; } .method .bar { display: none; } .dash-cols { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
 <header>
   <div class="brand">True North Structural <small>Project Manager</small></div>
   <div class="sp"></div>
+  <button class="ghost" id="btnDash">Dashboard</button>
   <button class="ghost" id="btnSettings">Settings</button>
   <button class="primary" id="btnNew" style="background:var(--accent);border-color:var(--accent)">+ New RFP</button>
 </header>
@@ -404,7 +420,7 @@ function stepProject() {
     ${field("sf", "Area (SF)", p?.sf, { type: "number" })}${field("construction_value", "Construction value ($)", p?.construction_value, { type: "number", ph: "blank = SF × $/SF" })}
     ${field("expedite", "Schedule", p?.expedite || "Standard", { opts: Object.keys(S.settings.fee_model.expedite) })}
     ${field("start_date", "Anticipated NTP", p?.start_date, { type: "date" })}
-    ${field("description", "Project understanding (prints on proposal)", p?.description ?? l.description, { type: "textarea", wide: true })}
+    ${field("description", "Project understanding (describe the building: type, stories, SF, structural system, key features)", p?.description ?? l.description, { type: "textarea", wide: true, ph: "e.g. The project is a new two-story, 7,800 SF medical office building with steel moment frames, composite deck, two stairwells, and one elevator. The foundation system consists of shallow spread footings bearing on improved soils." })}
   </div><div class="actions"><button class="primary">${p ? "Update project" : "Create project &amp; assign number"}</button></div></form>`;
   const tpl = S.settings.folder_templates;
   const folders = p ? `<h3>Project folders</h3>
@@ -467,7 +483,17 @@ function stepScope() {
     rows.forEach((r) => { const c = cats.find((x) => x.type === r.type) || {}; (c.pool === "addon" ? (addon += priceLine(r)) : (design += priceLine(r))); });
     $("#sums").innerHTML = `Design build-up <b class="mono">${money(design)}</b> &nbsp;·&nbsp; Add-ons <b class="mono">${money(addon)}</b>`;
   };
+  const sosCfg = S.settings.scope_of_services || (S.settings.proposal || {}).scope_of_services || [];
+  const sosSelected = new Set(p.scope_of_services || sosCfg.filter((s) => s.default).map((s) => s.key));
+  const rk = Object.keys(S.settings.rates).filter((k) => !k.startsWith("_"));
+  const rateLabels = { engineering: "Engineer", eit: "EIT", drafting: "Drafting", admin: "Admin" };
+
   $("#stepBody").innerHTML = `<div class="card"><h2>Scope &amp; Deliverables</h2><p class="sub">Design lines feed the hourly method and get the averaged design fee; add-ons (inspections, CA, reviews) are priced on top. Hours default from the catalog.</p>
+    <h3>Hourly rates</h3>
+    <div class="row" id="rateRow" style="gap:14px;margin-bottom:12px">${rk.map((k) => `<div><label>${esc(rateLabels[k] || k)} ($/hr)</label><input type="number" data-rate="${esc(k)}" value="${S.settings.rates[k]}" style="width:90px;margin-top:2px"></div>`).join("")}<div style="align-self:flex-end"><button type="button" id="saveRates">Save rates</button></div></div>
+    <h3>Scope of services</h3>
+    <p class="sub">Standard items that print in the Scope of Services section of the proposal.</p>
+    <div id="sosToggles" style="margin-bottom:14px">${sosCfg.map((s) => `<label class="check" style="margin-bottom:6px"><input type="checkbox" value="${esc(s.key)}" ${sosSelected.has(s.key) ? "checked" : ""}> ${esc(s.text.replace("${visit_rate}", "$" + (S.settings.rates.engineering * 3)))}</label>`).join("")}</div>
     <h3>Client documents</h3>
     <div class=”drop” id=”drop”>Drop drawings, specs, the RFP or a geotech report here, or <label class=”pick”>browse<input type=”file” id=”pick” multiple hidden></label></div>
     <ul class=”docs” id=”docs”></ul>
@@ -515,10 +541,17 @@ function stepScope() {
   guard(drawDocs);
   $("#lines").onclick = (e) => { if (e.target.dataset.del) { rows.splice(Number(e.target.dataset.del), 1); draw(); } };
   $("#add").onclick = () => { const c = cats.find((x) => x.type === $("#addType").value); rows.push({ type: c.type, description: "", rate_key: c.rate, hours: c.hours }); draw(); };
+  $("#saveRates").onclick = () => guard(async () => {
+    const rates = Object.fromEntries([...document.querySelectorAll("[data-rate]")].map((i) => [i.dataset.rate, Number(i.value)]));
+    await act("update_settings", { patch: { rates } });
+    S.settings = await act("get_settings");
+    toast("Rates saved");
+  });
   $("#saveScope").onclick = () => guard(async () => {
     const clean = rows.map((r) => Object.fromEntries(Object.entries(r).filter(([, v]) => v !== "" && v !== undefined && v !== null)));
     const split = (s) => s.split("\n").map((x) => x.trim()).filter(Boolean);
-    await act("set_scope", { project_no: p.project_no, lines: clean, assumptions: split($("#asm").value), exclusions: split($("#exc").value) });
+    const sos = [...document.querySelectorAll("#sosToggles input:checked")].map((i) => i.value);
+    await act("set_scope", { project_no: p.project_no, lines: clean, scope_of_services: sos, assumptions: split($("#asm").value), exclusions: split($("#exc").value) });
     toast("Scope saved"); await refresh(6);
   });
 }
@@ -669,6 +702,167 @@ async function openSettings() {
   dlgSettings.showModal();
 }
 $("#btnSettings").onclick = () => guard(openSettings);
+
+// ── Dashboard ──
+const _today = () => new Date().toLocaleDateString("en-CA");
+const _monthAgo = () => { const d = new Date(); d.setMonth(d.getMonth() - 1); return d.toLocaleDateString("en-CA"); };
+let dashFrom = _monthAgo(), dashTo = _today(), dashCache = null;
+async function renderDashboard(refetch = true) {
+  S.sel = null; S.rec = null; renderPipeline();
+  if (refetch || !dashCache) {
+    let data;
+    try {
+      const r = await fetch("/api/dashboard");
+      data = await r.json();
+      if (!r.ok || data.error) { toast(data.error || "Dashboard request failed", true); return; }
+    } catch (e) { toast("Could not load dashboard data: " + e.message, true); return; }
+    dashCache = data;
+  }
+  let outcomes = dashCache.outcomes;
+  if (dashFrom) outcomes = outcomes.filter((o) => o.dateRFP && o.dateRFP >= dashFrom);
+  if (dashTo) outcomes = outcomes.filter((o) => o.dateRFP && o.dateRFP <= dashTo);
+
+  const won = outcomes.filter((o) => o.outcome === "won");
+  const pending = outcomes.filter((o) => o.outcome === "pending");
+  const lost = outcomes.filter((o) => o.outcome === "lost");
+  const complete = won.filter((o) => o.job_complete);
+  const active = won.filter((o) => !o.job_complete);
+
+  const sum = (arr, k) => arr.reduce((s, o) => s + (o[k] || 0), 0);
+  const wonRev = sum(won, "quoted_fee");
+  const pendingVal = sum(pending.filter((o) => o.quoted_fee), "quoted_fee");
+  const completedFees = sum(complete, "final_fee");
+  const completeHrs = sum(complete, "hours_spent");
+  const avgRate = completeHrs > 0 ? Math.round(completedFees / completeHrs) : 0;
+  const winPct = won.length + lost.length > 0 ? Math.round(won.length / (won.length + lost.length) * 100) : 0;
+  const totalHrs = sum(outcomes, "hours_spent");
+  const engRate = S.settings?.rates?.engineering || 125;
+  const rateThreshold = Number(localStorage.getItem("dash_rate_threshold")) || engRate;
+
+  const totalInvoiced = sum(won, "amount_invoiced");
+  const totalPaid = sum(won, "amount_paid");
+  const totalBalance = sum(won, "balance_due");
+
+  const pct = (n, d) => d > 0 ? Math.round(n / d * 100) : 0;
+  const barSeg = (n, color, total) => n > 0 ? `<div style="width:${pct(n, total)}%;background:${color}">${n}</div>` : "";
+
+  const billingChip = (s) => {
+    if (!s) return "";
+    const map = { paid: "Won", invoiced: "ProposalIssued", partial: "NoBid", not_invoiced: "" };
+    const label = { paid: "paid", invoiced: "invoiced", partial: "partial", not_invoiced: "not invoiced" };
+    return `<span class="chip ${map[s] || ""}">${label[s] || s}</span>`;
+  };
+
+  // KPI tiles
+  const tiles = [
+    { val: money(wonRev), lbl: "Won Revenue", cls: "ok" },
+    { val: money(pendingVal), lbl: "Pending Value", cls: "warn" },
+    { val: `${winPct}%`, lbl: "Win Rate", cls: winPct >= 70 ? "ok" : winPct >= 40 ? "warn" : "bad" },
+    { val: money(totalInvoiced), lbl: "Total Invoiced", cls: "" },
+    { val: money(totalPaid), lbl: "Total Collected", cls: "ok" },
+    { val: money(totalBalance), lbl: "Outstanding A/R", cls: totalBalance > 0 ? "warn" : "ok" },
+    { val: `$${avgRate}`, lbl: "Avg $/hr (Complete)", cls: avgRate >= rateThreshold ? "ok" : "bad" },
+    { val: totalHrs.toFixed(1), lbl: "Total Hours", cls: "" },
+  ];
+
+  const projLabel = (o) => o.project_name || o.location.street || o.client_name;
+
+  // Active jobs burn
+  const burnHtml = active.sort((a, b) => b.quoted_fee - a.quoted_fee).map((o) => {
+    const consumed = o.hours_spent * engRate;
+    const burnPct = Math.min(Math.round(consumed / o.quoted_fee * 100), 100);
+    const color = burnPct > 85 ? "var(--bad)" : burnPct > 60 ? "var(--warn)" : "var(--navy-2)";
+    return `<div class="burn-row">
+      <div class="lbl"><b>${esc(o.job_number)}</b> ${esc(projLabel(o))}</div>
+      <div class="bar"><div style="height:10px;background:var(--shade);border-radius:5px;position:relative;overflow:hidden"><div style="position:absolute;inset:0 auto 0 0;width:${burnPct}%;background:${color};border-radius:5px"></div></div></div>
+      <div class="val">${burnPct}% · ${o.hours_spent}h</div>
+    </div>`;
+  }).join("");
+
+  // Revenue by client (aggregate won fees)
+  const byClient = {};
+  won.forEach((o) => { byClient[o.client_name] = (byClient[o.client_name] || 0) + (o.quoted_fee || 0); });
+  const clientArr = Object.entries(byClient).sort((a, b) => b[1] - a[1]);
+  const maxClientFee = clientArr[0]?.[1] || 1;
+  const clientHtml = clientArr.map(([name, fee]) => `<div class="hbar-row">
+    <div class="lbl">${esc(name)}</div>
+    <div class="bar"><div style="height:10px;background:var(--shade);border-radius:5px;position:relative;overflow:hidden"><div style="position:absolute;inset:0 auto 0 0;width:${pct(fee, maxClientFee)}%;background:var(--navy-2);border-radius:5px"></div></div></div>
+    <div class="val">${money(fee)}</div>
+  </div>`).join("");
+
+  // Jobs table
+  const outcomeChip = (o) => ({ won: "Won", pending: "ProposalIssued", lost: "Lost" })[o] || "";
+  const tableRows = outcomes.sort((a, b) => a.job_number.localeCompare(b.job_number)).map((o) => `<tr>
+    <td class="mono">${esc(o.job_number)}</td>
+    <td>${esc(projLabel(o))}</td>
+    <td>${esc(o.client_name)}</td>
+    <td><span class="chip ${outcomeChip(o.outcome)}">${esc(o.outcome)}${o.job_complete ? " ✓" : ""}</span></td>
+    <td>${billingChip(o.billing_status)}</td>
+    <td class="num">${o.quoted_fee ? money(o.quoted_fee) : "—"}</td>
+    <td class="num">${o.amount_invoiced ? money(o.amount_invoiced) : "—"}</td>
+    <td class="num">${o.amount_paid ? money(o.amount_paid) : "—"}</td>
+    <td class="num" style="${o.balance_due > 0 ? "color:var(--warn);font-weight:600" : ""}">${o.balance_due != null && o.outcome === "won" ? money(o.balance_due) : "—"}</td>
+    <td class="num">${o.hours_spent}</td>
+    <td class="num" style="${o.effective_rate && Math.round(o.effective_rate) < rateThreshold ? "color:var(--bad);font-weight:600" : o.effective_rate && Math.round(o.effective_rate) >= rateThreshold ? "color:var(--ok)" : ""}">${o.effective_rate ? "$" + Math.round(o.effective_rate) : "—"}</td>
+  </tr>`).join("");
+
+  $("#main").innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div style="font-size:20px;font-weight:700">Dashboard</div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <label style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">From</label>
+        <input type="date" id="dashFrom" value="${esc(dashFrom)}" style="width:150px;padding:5px 8px">
+        <label style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">To</label>
+        <input type="date" id="dashTo" value="${esc(dashTo)}" style="width:150px;padding:5px 8px">
+        <button id="dashClear" style="font-size:12px;padding:5px 10px" ${!dashFrom && !dashTo ? 'disabled' : ''}>Clear</button>
+      </div>
+    </div>
+    <div class="dash-stats">${tiles.map((t) => `<div class="stat"><div class="stat-val ${t.cls}">${t.val}</div><div class="stat-lbl">${t.lbl}</div></div>`).join("")}</div>
+    <div class="card" style="margin-bottom:16px">
+      <h2>Outcome Breakdown</h2>
+      <p class="sub">${outcomes.length} jobs — ${won.length} won, ${pending.length} pending, ${lost.length} lost</p>
+      <div class="outcome-bar">${barSeg(won.length, "var(--ok)", outcomes.length)}${barSeg(pending.length, "var(--accent)", outcomes.length)}${barSeg(lost.length, "var(--bad)", outcomes.length)}</div>
+      <div style="display:flex;gap:16px;font-size:12px;color:var(--muted)">
+        <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:var(--ok)"></span> Won (${won.length})</span>
+        <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:var(--accent)"></span> Pending (${pending.length})</span>
+        <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:var(--bad)"></span> Lost (${lost.length})</span>
+      </div>
+    </div>
+    <div class="dash-cols">
+      <div class="card"><h2>Active Jobs — Budget Burn</h2><p class="sub">Hours × $${engRate}/hr as % of quoted fee</p>${burnHtml || '<div class="sub">No active jobs.</div>'}</div>
+      <div class="card"><h2>Revenue by Client</h2><p class="sub">Won fee totals</p>${clientHtml}</div>
+    </div>
+    ${totalBalance > 0 ? `<div class="card" style="margin-bottom:16px">
+      <h2>Accounts Receivable</h2>
+      <p class="sub">${money(totalBalance)} outstanding across ${won.filter((o) => o.balance_due > 0).length} job(s)</p>
+      ${won.filter((o) => o.balance_due > 0).sort((a, b) => b.balance_due - a.balance_due).map((o) => `<div class="burn-row">
+        <div class="lbl"><b>${esc(o.job_number)}</b> ${esc(projLabel(o))}</div>
+        <div class="bar"><div style="height:10px;background:var(--shade);border-radius:5px;position:relative;overflow:hidden"><div style="position:absolute;inset:0 auto 0 0;width:${pct(o.amount_paid || 0, o.amount_invoiced)}%;background:var(--ok);border-radius:5px"></div></div></div>
+        <div class="val" style="color:var(--warn)">${money(o.balance_due)}</div>
+      </div>`).join("")}
+    </div>` : ""}
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h2>All Jobs</h2>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)">
+          <label style="text-transform:none;letter-spacing:0">Min $/hr</label>
+          <input id="rateThreshold" type="number" value="${rateThreshold}" step="5" style="width:80px;padding:4px 8px;margin:0">
+        </div>
+      </div>
+      <table><thead><tr><th>Job #</th><th>Project</th><th>Client</th><th>Outcome</th><th>Billing</th><th class="num">Quoted</th><th class="num">Invoiced</th><th class="num">Paid</th><th class="num">Balance</th><th class="num">Hours</th><th class="num">$/hr</th></tr></thead>
+      <tbody>${tableRows}</tbody></table>
+    </div>`;
+  $("#dashFrom").onchange = (e) => { dashFrom = e.target.value; guard(() => renderDashboard(false)); };
+  $("#dashTo").onchange = (e) => { dashTo = e.target.value; guard(() => renderDashboard(false)); };
+  $("#dashClear").onclick = () => { dashFrom = ''; dashTo = ''; guard(() => renderDashboard(false)); };
+}
+$("#btnDash").onclick = () => { dashCache = null; guard(renderDashboard); };
+document.addEventListener("change", (e) => {
+  if (e.target.id === "rateThreshold") {
+    localStorage.setItem("dash_rate_threshold", e.target.value);
+    guard(() => renderDashboard(false));
+  }
+});
 
 (async () => { await guard(async () => { S.settings = await act("get_settings"); await loadPipeline(); }); })();
 </script>

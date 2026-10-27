@@ -377,6 +377,16 @@
       "Invoices are issued at each milestone and for add-on services as performed; payment is due within 30 days.",
       "Additional services beyond this scope will be performed on an hourly basis at the rates listed, with prior authorization.",
       "This proposal is valid for the period stated above. Work begins upon receipt of signed acceptance."
+    ],
+    "scope_of_services": [
+      { "key": "preliminary", "text": "Prepare preliminary structural designs to determine the most economical structural system.", "default": true },
+      { "key": "dd", "text": "Prepare design development drawings and outline specifications.", "default": true },
+      { "key": "cd", "text": "Prepare working drawings & outline specifications.", "default": true },
+      { "key": "shop_drawings", "text": "Review shop drawings and test reports.", "default": false },
+      { "key": "meetings", "text": "Attend review meetings and respond to comments.", "default": false },
+      { "key": "ca_questions", "text": "Be available to answer questions which may arise during construction regarding the structural plans.", "default": false },
+      { "key": "site_elements", "text": "Provide structural site elements as limited here:", "default": false },
+      { "key": "site_visits", "text": "Jobsite observations during construction HAVE NOT been included in this proposal. If requested, jobsite observations will be billed at ${visit_rate}/visit.", "default": true }
     ]
   },
   "email_parser": {

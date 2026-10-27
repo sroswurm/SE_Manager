@@ -1,12 +1,20 @@
 {
-  "schema_version": "0.1.0",
+  "schema_version": "0.3.0",
   "as_of": "2026-10-27",
   "definitions": {
     "outcome": "won = agreement, purchase order or email acceptance received. lost = declined or awarded elsewhere. pending = proposal out or not yet sent.",
+    "billing_status": "not_invoiced = work done but no invoice sent. invoiced = invoice issued, awaiting payment. paid = payment received in full. partial = some payment received, balance outstanding. null for lost/pending jobs.",
     "job_complete": "true once the last deliverable is issued and the last invoice sent. false while work remains. null when the job is not won.",
+    "dateRFP": "Date the request for proposal or inquiry was received. YYYY-MM-DD.",
+    "dateQuoted": "Date the proposal or quote was sent to the client. null if not yet quoted.",
+    "dateAwarded": "Date the job was awarded (won) or lost notification received. null for pending jobs.",
     "quoted_fee": "Latest fee agreed (won) or proposed (pending). For not-to-exceed jobs, the cap. null if no proposal has been sent.",
     "final_fee": "Total billed at completion, including additional services. null until job_complete is true.",
-    "hours_spent": "All hours charged to the job to date, including pre-award proposal time."
+    "amount_invoiced": "Total dollar amount invoiced to date across all milestones. null if nothing invoiced yet.",
+    "amount_paid": "Total dollar amount received from the client to date. null if nothing received.",
+    "balance_due": "amount_invoiced minus amount_paid. Represents outstanding receivables. null if nothing invoiced.",
+    "hours_spent": "All hours charged to the job to date, including pre-award proposal time.",
+    "invoices": "List of invoices issued for this job. Each entry has dateIssued (YYYY-MM-DD when the invoice was sent) and datePaid (YYYY-MM-DD when full payment was received; null if unpaid or only partially paid)."
   },
   "outcomes": [
     {
@@ -19,12 +27,24 @@
         "zip": "29401",
         "county": "Charleston"
       },
+      "dateRFP": "2026-09-27",
+      "dateQuoted": "2026-09-29",
+      "dateAwarded": "2026-10-01",
       "outcome": "won",
+      "billing_status": "paid",
       "job_complete": false,
       "quoted_fee": 5200,
       "final_fee": null,
+      "amount_invoiced": 4160,
+      "amount_paid": 4160,
+      "balance_due": 0,
       "hours_spent": 31.5,
-      "note": "Permit set and revision issued. Framing site visit (the 20% milestone) has not happened yet, so the job is not final."
+      "invoices": [
+        { "dateIssued": "2026-10-05", "datePaid": "2026-10-08" },
+        { "dateIssued": "2026-10-10", "datePaid": "2026-10-14" },
+        { "dateIssued": "2026-10-17", "datePaid": "2026-10-20" }
+      ],
+      "note": "80% billed (35% + 50% + partial 75%). All invoices paid. Framing site visit milestone remains."
     },
     {
       "job_number": "26-0019",
@@ -36,12 +56,23 @@
         "zip": "29403",
         "county": "Charleston"
       },
+      "dateRFP": "2026-09-28",
+      "dateQuoted": "2026-09-30",
+      "dateAwarded": "2026-10-02",
       "outcome": "won",
+      "billing_status": "partial",
       "job_complete": false,
       "quoted_fee": 11800,
       "final_fee": null,
+      "amount_invoiced": 5900,
+      "amount_paid": 4130,
+      "balance_due": 1770,
       "hours_spent": 61.0,
-      "note": "DD narrative billed. Permit set and construction administration remain."
+      "invoices": [
+        { "dateIssued": "2026-10-06", "datePaid": "2026-10-12" },
+        { "dateIssued": "2026-10-20", "datePaid": null }
+      ],
+      "note": "50% milestone invoiced. 35% paid, 50% invoice is 30 days outstanding. Permit set and CA remain."
     },
     {
       "job_number": "26-0023",
@@ -53,12 +84,22 @@
         "zip": "29445",
         "county": "Berkeley"
       },
+      "dateRFP": "2026-09-29",
+      "dateQuoted": "2026-10-01",
+      "dateAwarded": "2026-10-03",
       "outcome": "won",
+      "billing_status": "paid",
       "job_complete": true,
       "quoted_fee": 4400,
       "final_fee": 4400,
+      "amount_invoiced": 4400,
+      "amount_paid": 4400,
+      "balance_due": 0,
       "hours_spent": 24.0,
-      "note": "Single milestone billed on delivery of stamped shops and calcs. No additional services."
+      "invoices": [
+        { "dateIssued": "2026-10-08", "datePaid": "2026-10-15" }
+      ],
+      "note": "Single milestone billed on delivery of stamped shops and calcs. Paid within 45 days per terms."
     },
     {
       "job_number": "26-0027",
@@ -70,12 +111,22 @@
         "zip": "29418",
         "county": "Charleston"
       },
+      "dateRFP": "2026-09-30",
+      "dateQuoted": "2026-10-01",
+      "dateAwarded": "2026-10-02",
       "outcome": "won",
+      "billing_status": "paid",
       "job_complete": true,
       "quoted_fee": 1850,
       "final_fee": 1850,
+      "amount_invoiced": 1850,
+      "amount_paid": 1850,
+      "balance_due": 0,
       "hours_spent": 9.5,
-      "note": "Letter issued 10 days after the request. No additional services."
+      "invoices": [
+        { "dateIssued": "2026-10-05", "datePaid": "2026-10-05" }
+      ],
+      "note": "Letter issued 10 days after the request. Invoice paid on receipt per terms."
     },
     {
       "job_number": "26-0031",
@@ -87,12 +138,23 @@
         "zip": "29412",
         "county": "Charleston"
       },
+      "dateRFP": "2026-10-01",
+      "dateQuoted": "2026-10-03",
+      "dateAwarded": "2026-10-05",
       "outcome": "won",
+      "billing_status": "paid",
       "job_complete": true,
       "quoted_fee": 1650,
       "final_fee": 1805,
+      "amount_invoiced": 1805,
+      "amount_paid": 1805,
+      "balance_due": 0,
       "hours_spent": 13.5,
-      "note": "Final is the 1,650 lump sum plus one extra hour at 155 to relocate a post after the verification pit."
+      "invoices": [
+        { "dateIssued": "2026-10-10", "datePaid": "2026-10-14" },
+        { "dateIssued": "2026-10-17", "datePaid": "2026-10-21" }
+      ],
+      "note": "Lump sum plus one additional hour at $155 for post relocation. Both invoices paid."
     },
     {
       "job_number": "26-0034",
@@ -104,12 +166,22 @@
         "zip": "29483",
         "county": "Dorchester"
       },
+      "dateRFP": "2026-10-02",
+      "dateQuoted": "2026-10-03",
+      "dateAwarded": "2026-10-04",
       "outcome": "won",
+      "billing_status": "paid",
       "job_complete": true,
       "quoted_fee": 900,
       "final_fee": 775,
+      "amount_invoiced": 775,
+      "amount_paid": 775,
+      "balance_due": 0,
       "hours_spent": 5.0,
-      "note": "Hourly with a 900 cap. 5.0 hours at 155, so 125 under the cap."
+      "invoices": [
+        { "dateIssued": "2026-10-09", "datePaid": "2026-10-09" }
+      ],
+      "note": "Hourly with a $900 cap. 5.0 hours at $155 = $775. Paid on receipt."
     },
     {
       "job_number": "26-0038",
@@ -121,12 +193,22 @@
         "zip": "29482",
         "county": "Charleston"
       },
+      "dateRFP": "2026-10-03",
+      "dateQuoted": "2026-10-05",
+      "dateAwarded": "2026-10-07",
       "outcome": "won",
+      "billing_status": "invoiced",
       "job_complete": false,
       "quoted_fee": 14500,
       "final_fee": null,
+      "amount_invoiced": 5075,
+      "amount_paid": 0,
+      "balance_due": 5075,
       "hours_spent": 58.5,
-      "note": "Foundation package billed (35%). Permit set and construction administration remain."
+      "invoices": [
+        { "dateIssued": "2026-10-15", "datePaid": null }
+      ],
+      "note": "35% milestone invoiced Oct 15. Payment not yet received (within 30-day window). Permit set and CA remain."
     },
     {
       "job_number": "26-0041",
@@ -138,12 +220,20 @@
         "zip": "29407",
         "county": "Charleston"
       },
+      "dateRFP": "2026-10-05",
+      "dateQuoted": "2026-10-10",
+      "dateAwarded": null,
       "outcome": "pending",
+      "billing_status": null,
       "job_complete": null,
       "quoted_fee": 28500,
       "final_fee": null,
+      "amount_invoiced": null,
+      "amount_paid": null,
+      "balance_due": null,
       "hours_spent": 14.5,
-      "note": "Proposal rev 1 sent Sep 30. Client said the board would decide Oct 20. No response recorded as of Oct 27."
+      "invoices": [],
+      "note": "Proposal sent Oct 10. Client said the board would decide Oct 20. No response recorded as of Oct 27."
     },
     {
       "job_number": "26-0044",
@@ -155,12 +245,20 @@
         "zip": "23511",
         "county": "Norfolk City"
       },
+      "dateRFP": "2026-10-06",
+      "dateQuoted": "2026-10-08",
+      "dateAwarded": "2026-10-10",
       "outcome": "won",
+      "billing_status": "not_invoiced",
       "job_complete": false,
       "quoted_fee": 19200,
       "final_fee": null,
+      "amount_invoiced": 0,
+      "amount_paid": 0,
+      "balance_due": 0,
       "hours_spent": 33.0,
-      "note": "65% submittal due Oct 30. 100% submittal and final support remain."
+      "invoices": [],
+      "note": "65% submittal due Oct 30. First invoice will go out after 65% acceptance. Net-45 terms per subcontract."
     },
     {
       "job_number": "26-0046",
@@ -172,11 +270,19 @@
         "zip": "29464",
         "county": "Charleston"
       },
+      "dateRFP": "2026-10-08",
+      "dateQuoted": null,
+      "dateAwarded": null,
       "outcome": "pending",
+      "billing_status": null,
       "job_complete": null,
       "quoted_fee": null,
       "final_fee": null,
+      "amount_invoiced": null,
+      "amount_paid": null,
+      "balance_due": null,
       "hours_spent": 1.0,
+      "invoices": [],
       "note": "Client asked for a fee by Oct 16. No proposal sent yet. A draft fee exists but was not shared."
     },
     {
@@ -189,12 +295,22 @@
         "zip": "29407",
         "county": "Charleston"
       },
+      "dateRFP": "2026-10-10",
+      "dateQuoted": "2026-10-12",
+      "dateAwarded": "2026-10-14",
       "outcome": "won",
+      "billing_status": "partial",
       "job_complete": false,
       "quoted_fee": 6500,
       "final_fee": null,
+      "amount_invoiced": 3410,
+      "amount_paid": 2170,
+      "balance_due": 1240,
       "hours_spent": 22.0,
-      "note": "Hourly with a 6,500 cap. Interim memo billed Oct 13. At 22.0 hours about 52% of the cap is used."
+      "invoices": [
+        { "dateIssued": "2026-10-20", "datePaid": null }
+      ],
+      "note": "Hourly NTE $6,500. Interim invoice billed Oct 20 for 22 hrs. Partial payment received; remainder due."
     },
     {
       "job_number": "26-0052",
@@ -206,12 +322,120 @@
         "zip": "29464",
         "county": "Charleston"
       },
+      "dateRFP": "2026-10-26",
+      "dateQuoted": null,
+      "dateAwarded": null,
       "outcome": "pending",
+      "billing_status": null,
       "job_complete": null,
       "quoted_fee": null,
       "final_fee": null,
+      "amount_invoiced": null,
+      "amount_paid": null,
+      "balance_due": null,
       "hours_spent": 0.5,
+      "invoices": [],
       "note": "Inquiry received Oct 26. No proposal yet."
+    },
+    {
+      "job_number": "26-0014",
+      "client_id": "fde480bc-88fd-5ccf-ae2e-731d9eaac4b9",
+      "location": {
+        "street": "45 Broad St",
+        "city": "Charleston",
+        "state": "SC",
+        "zip": "29401",
+        "county": "Charleston"
+      },
+      "dateRFP": "2026-10-04",
+      "dateQuoted": "2026-10-06",
+      "dateAwarded": null,
+      "outcome": "lost",
+      "billing_status": null,
+      "job_complete": null,
+      "quoted_fee": 8200,
+      "final_fee": null,
+      "amount_invoiced": null,
+      "amount_paid": null,
+      "balance_due": null,
+      "hours_spent": 6.0,
+      "invoices": [],
+      "note": "Owner went with a firm that had historic district experience. Palmetto Line said they tried to advocate for us."
+    },
+    {
+      "job_number": "26-0029",
+      "client_id": "d49be7dd-59f0-505e-a7a2-70ea460fa99d",
+      "location": {
+        "street": "1025 Remount Rd",
+        "city": "North Charleston",
+        "state": "SC",
+        "zip": "29406",
+        "county": "Charleston"
+      },
+      "dateRFP": "2026-10-07",
+      "dateQuoted": "2026-10-09",
+      "dateAwarded": null,
+      "outcome": "lost",
+      "billing_status": null,
+      "job_complete": null,
+      "quoted_fee": 3400,
+      "final_fee": null,
+      "amount_invoiced": null,
+      "amount_paid": null,
+      "balance_due": null,
+      "hours_spent": 2.5,
+      "invoices": [],
+      "note": "TopSeal lost the re-roof bid to a competitor, so our structural scope died with it."
+    },
+    {
+      "job_number": "26-0036",
+      "client_id": "536bcb1c-1c38-5635-9d32-8738213beef1",
+      "location": {
+        "street": "220 E Richardson Ave",
+        "city": "Summerville",
+        "state": "SC",
+        "zip": "29483",
+        "county": "Dorchester"
+      },
+      "dateRFP": "2026-10-11",
+      "dateQuoted": "2026-10-13",
+      "dateAwarded": null,
+      "outcome": "lost",
+      "billing_status": null,
+      "job_complete": null,
+      "quoted_fee": 4800,
+      "final_fee": null,
+      "amount_invoiced": null,
+      "amount_paid": null,
+      "balance_due": null,
+      "hours_spent": 3.0,
+      "invoices": [],
+      "note": "Contractor said the owner decided not to proceed with the addition after getting all the trade pricing."
+    },
+    {
+      "job_number": "26-0042",
+      "client_id": "f05aabc5-53c0-592e-81f0-0b9880f2ae14",
+      "location": {
+        "street": "1724 Sam Rittenberg Blvd",
+        "city": "Charleston",
+        "state": "SC",
+        "zip": "29407",
+        "county": "Charleston"
+      },
+      "dateRFP": "2026-10-15",
+      "dateQuoted": "2026-10-17",
+      "dateAwarded": null,
+      "outcome": "lost",
+      "billing_status": null,
+      "job_complete": null,
+      "quoted_fee": 16500,
+      "final_fee": null,
+      "amount_invoiced": null,
+      "amount_paid": null,
+      "balance_due": null,
+      "hours_spent": 8.0,
+      "invoices": [],
+      "note": "Developer awarded to a larger firm that could bundle civil and structural under one contract. Fee was competitive."
     }
   ]
 }
