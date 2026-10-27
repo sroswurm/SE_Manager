@@ -1,33 +1,38 @@
 import { z } from "zod";
 import { readTable, writeTable } from "../storage.js";
+const addressSchema = z.object({
+    street: z.string(),
+    unit: z.string().nullish(),
+    city: z.string(),
+    state: z.string(),
+    zip: z.string(),
+    county: z.string(),
+});
+const contactSchema = z.object({
+    name: z.string(),
+    title: z.string().nullish(),
+    email: z.string(),
+    phone: z.string(),
+    address: addressSchema.nullish(),
+});
 export function registerCreateProject(server) {
-    server.tool("create_project", "Create a new structural engineering project. WORKFLOW: If the user has not specified a client, always ask 'Who is the client?' first before gathering any other project details. Then use search_clients to check if they already exist. Provide either a clientId for an existing client, or client details (clientName, etc.) to create a new one.", {
-        clientId: z.string().optional().describe("Existing client ID (from search_clients)"),
-        clientName: z.string().optional().describe("Client or company name (for new client)"),
-        contactName: z.string().optional().describe("Primary contact person"),
-        contactEmail: z.string().optional().describe("Contact email"),
-        contactPhone: z.string().optional().describe("Contact phone"),
-        clientAddress: z.string().optional().describe("Client mailing address"),
-        projectName: z.string().describe("Project name"),
-        description: z.string().optional().describe("Project description / scope summary"),
-        category: z.enum([
-            "residential", "commercial", "industrial",
-            "institutional", "infrastructure", "mixed-use",
-        ]).describe("Project type category"),
-        subtype: z.string().optional().describe("Project subtype (e.g. addition, tenant_improvement, bridge)"),
-        address: z.string().optional().describe("Project site address"),
-        deliverables: z.array(z.object({
-            name: z.string(),
-            description: z.string().optional(),
-        })).optional().default([]).describe("What the SE firm will produce"),
-        deadlines: z.array(z.object({
-            name: z.string(),
-            dueDate: z.string().optional(),
-            notes: z.string().optional(),
-        })).optional().default([]).describe("Key deadlines"),
+    server.tool("create_project", `Create a new structural engineering project. WORKFLOW: If the user has not specified a client, always ask "Who is the client?" first. Then use search_clients to check if they already exist. Provide either a clientId for an existing client, or client details to create a new one.`, {
+        clientId: z.string().optional().describe("Existing client GUID (from search_clients)"),
+        clientEntity: z.string().optional().describe("Client or company name (for new client)"),
+        clientType: z.enum(["architect", "fabricator", "contractor", "owner", "developer"]).optional().describe("Client type"),
+        clientAddress: addressSchema.optional().describe("Client mailing address"),
+        clientContacts: z.array(contactSchema).optional().default([]).describe("Client contact(s)"),
+        billingContactIndex: z.number().optional().default(0).describe("Index into contacts array for billing"),
+        defaultTermsDays: z.number().optional().default(30).describe("Payment terms in days"),
+        referralSource: z.string().optional().describe("How the client found us"),
+        location: addressSchema.optional().describe("Project site address"),
+        structuralMaterial: z.array(z.string()).optional().default([]).describe("Structural materials (e.g. Wood, Steel, Concrete)"),
+        scope: z.string().describe("Project scope description"),
+        deliverables: z.array(z.string()).optional().default([]).describe("List of deliverables"),
+        feeType: z.enum(["Lump Sum", "Not To Exceed", "Hourly", "Time & Materials"]).optional().default("Lump Sum").describe("Fee structure"),
         notes: z.string().optional().describe("Additional notes"),
     }, async (args) => {
-        if (!args.clientId && !args.clientName) {
+        if (!args.clientId && !args.clientEntity) {
             return {
                 content: [{
                         type: "text",
@@ -40,7 +45,7 @@ export function registerCreateProject(server) {
         let resolvedClient;
         let isNewClient = false;
         if (args.clientId) {
-            const existing = clients.find((c) => c.id === args.clientId);
+            const existing = clients.find((c) => c.client_id === args.clientId);
             if (!existing) {
                 return {
                     content: [{
@@ -53,78 +58,43 @@ export function registerCreateProject(server) {
             resolvedClient = existing;
         }
         else {
-            const now = new Date().toISOString();
             resolvedClient = {
-                id: crypto.randomUUID(),
-                name: args.clientName,
-                contactName: args.contactName,
-                contactEmail: args.contactEmail,
-                contactPhone: args.contactPhone,
-                address: args.clientAddress,
-                createdAt: now,
-                updatedAt: now,
+                client_id: crypto.randomUUID(),
+                entity: args.clientEntity,
+                type: (args.clientType ?? "owner"),
+                address: args.clientAddress ?? { street: "", city: "", state: "", zip: "", county: "" },
+                contacts: args.clientContacts,
+                billing_contact_index: args.billingContactIndex,
+                default_terms_days: args.defaultTermsDays,
+                referral_source: args.referralSource ?? "",
             };
             clients.push(resolvedClient);
             isNewClient = true;
         }
-        const now = new Date().toISOString();
         const projectId = crypto.randomUUID();
         const newProject = {
-            id: projectId,
-            clientId: resolvedClient.id,
-            name: args.projectName,
-            description: args.description,
-            category: args.category,
-            subtype: args.subtype,
-            address: args.address,
+            project_id: projectId,
+            client_id: resolvedClient.client_id,
+            client_status: isNewClient ? "new" : "existing",
+            location: args.location ?? { street: "", city: "", state: "", zip: "", county: "" },
+            structural_material: args.structuralMaterial,
+            scope: args.scope,
+            deliverables: args.deliverables,
+            fee_type: args.feeType,
             notes: args.notes,
-            status: "intake",
-            createdAt: now,
-            updatedAt: now,
         };
-        const deliverableRows = args.deliverables.map((d) => ({
-            id: crypto.randomUUID(),
-            projectId,
-            name: d.name,
-            description: d.description,
-            status: "pending",
-            createdAt: now,
-            updatedAt: now,
-        }));
-        const deadlineRows = args.deadlines.map((d) => ({
-            id: crypto.randomUUID(),
-            projectId,
-            name: d.name,
-            dueDate: d.dueDate,
-            notes: d.notes,
-            status: "upcoming",
-            createdAt: now,
-            updatedAt: now,
-        }));
         await writeTable("clients.json", clients);
         const projects = await readTable("projects.json");
         projects.push(newProject);
         await writeTable("projects.json", projects);
-        if (deliverableRows.length > 0) {
-            const deliverables = await readTable("deliverables.json");
-            deliverables.push(...deliverableRows);
-            await writeTable("deliverables.json", deliverables);
-        }
-        if (deadlineRows.length > 0) {
-            const deadlines = await readTable("deadlines.json");
-            deadlines.push(...deadlineRows);
-            await writeTable("deadlines.json", deadlines);
-        }
         return {
             content: [{
                     type: "text",
                     text: JSON.stringify({
-                        message: `Project "${args.projectName}" created successfully.`,
+                        message: `Project created successfully.`,
                         project: newProject,
                         client: resolvedClient,
                         isNewClient,
-                        deliverables: deliverableRows,
-                        deadlines: deadlineRows,
                     }, null, 2),
                 }],
         };

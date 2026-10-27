@@ -2,7 +2,6 @@ import { z } from "zod";
 import Fuse from "fuse.js";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { readTable } from "../storage.js";
-import type { Client } from "../types.js";
 
 export function registerSearchClients(server: McpServer): void {
   server.tool(
@@ -25,7 +24,7 @@ export function registerSearchClients(server: McpServer): void {
       }
 
       const fuse = new Fuse(clients, {
-        keys: ["name", "contactName"],
+        keys: ["entity", "contacts.name"],
         threshold: 0.4,
         includeScore: true,
       });
@@ -37,10 +36,10 @@ export function registerSearchClients(server: McpServer): void {
           type: "text",
           text: JSON.stringify({
             matches: results.map((r) => ({
-              id: r.item.id,
-              name: r.item.name,
-              contactName: r.item.contactName,
-              contactEmail: r.item.contactEmail,
+              client_id: r.item.client_id,
+              entity: r.item.entity,
+              type: r.item.type,
+              contacts: r.item.contacts.map((c) => c.name),
               score: r.score,
             })),
             total: results.length,
