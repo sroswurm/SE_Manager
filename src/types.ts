@@ -1,71 +1,61 @@
-export type ProjectCategory =
-  | "residential"
-  | "commercial"
-  | "industrial"
-  | "institutional"
-  | "infrastructure"
-  | "mixed-use";
+export type ClientType = "architect" | "fabricator" | "contractor" | "owner" | "developer";
 
-export const PROJECT_SUBTYPES: Record<ProjectCategory, string[]> = {
-  residential: ["new_home", "addition", "renovation", "adu", "deck_patio", "foundation_repair"],
-  commercial: ["office", "retail", "tenant_improvement", "restaurant", "hotel"],
-  industrial: ["warehouse", "manufacturing", "cold_storage", "loading_dock"],
-  institutional: ["school", "hospital", "government", "religious", "library"],
-  infrastructure: ["bridge", "retaining_wall", "foundation", "shoring", "culvert"],
-  "mixed-use": ["residential_over_retail", "live_work", "podium", "other"],
-};
+export type FeeType = "Lump Sum" | "Not To Exceed" | "Hourly" | "Time & Materials";
+
+export interface Address {
+  street: string;
+  unit?: string | null;
+  city: string;
+  state: string;
+  zip: string;
+  county: string;
+}
+
+export interface Contact {
+  name: string;
+  title?: string | null;
+  email: string;
+  phone: string;
+  address?: Address | null;
+}
 
 export interface Client {
-  id: string;
-  name: string;
-  contactName?: string;
-  contactEmail?: string;
-  contactPhone?: string;
-  address?: string;
+  client_id: string;
+  entity: string;
+  type: ClientType;
+  address: Address;
+  contacts: Contact[];
+  billing_contact_index: number;
+  default_terms_days: number;
+  referral_source: string;
+  first_job?: string;
   notes?: string;
-  createdAt: string;
-  updatedAt: string;
 }
 
 export interface Project {
-  id: string;
-  clientId: string;
-  name: string;
-  description?: string;
-  category: ProjectCategory;
-  subtype?: string;
-  address?: string;
+  project_id: string;
+  client_id: string;
+  client_status: "existing" | "new";
+  location: Address;
+  structural_material: string[];
+  scope: string;
+  deliverables: string[];
+  fee_type: FeeType;
   notes?: string;
-  status: "intake" | "active" | "on_hold" | "completed" | "archived";
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface Deliverable {
-  id: string;
-  projectId: string;
-  name: string;
-  description?: string;
-  status: "pending" | "in_progress" | "complete";
-  createdAt: string;
-  updatedAt: string;
 }
 
 export interface Deadline {
-  id: string;
-  projectId: string;
+  deadline_id: string;
+  project_id: string;
   name: string;
-  dueDate?: string;
+  due_date?: string;
   notes?: string;
   status: "upcoming" | "complete" | "overdue";
-  createdAt: string;
-  updatedAt: string;
 }
 
 export type TableMap = {
   "clients.json": Client;
   "projects.json": Project;
-  "deliverables.json": Deliverable;
   "deadlines.json": Deadline;
 };
 
