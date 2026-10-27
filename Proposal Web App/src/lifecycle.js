@@ -6,7 +6,7 @@ const { z } = require("zod");
 const { withStore, read } = require("./store");
 const { getConfig, updateConfig, APP_DIR } = require("./config");
 const { estimateFee, priceLine } = require("./fee");
-const { generateFolders, maxFolderNumber, safeName } = require("./folders");
+const { folderScript, maxFolderNumber, safeName } = require("./folders");
 const { buildProposalPdf } = require("./proposal");
 const { parseEmail } = require("./parse-email");
 
@@ -311,7 +311,7 @@ const actions = {
   },
 
   generate_folders: {
-    description: "Step 4 — Create the project folder '<project_no> - <name>' on the projects drive with the selected template folders (omit folders for defaults). Safe to re-run; existing folders are left alone.",
+    description: "Step 4 — Build a Windows .bat (returned as `script`, save as `filename`) that creates the project folder '<project_no> - <name>' on the projects drive with the selected template folders (omit folders for defaults). Nothing is created until the .bat is run; re-running it leaves existing folders alone.",
     input: {
       project_no: z.string(), folders: z.array(z.string()).optional().describe("Top-level template folder names to include"),
       extra: z.array(z.string()).optional().describe("Additional custom subfolders, e.g. '04_Design/Wind'"),
@@ -320,9 +320,9 @@ const actions = {
       const cfg = getConfig();
       return withStore((db) => {
         const p = mustFind(db.tables.Projects, "project_no", project_no, "Project");
-        const r = generateFolders({ cfg, projectNo: p.project_no, name: p.name, selection: folders, extra });
+        const r = folderScript({ cfg, projectNo: p.project_no, name: p.name, selection: folders, extra });
         p.folder_path = r.base; p.updated = stamp();
-        db.log(project_no, "generate_folders", `${r.created} created: ${r.folders.join(", ")}`);
+        db.log(project_no, "generate_folders", `script for ${r.count} folder(s): ${r.folders.join(", ")}`);
         return r;
       });
     },
@@ -372,20 +372,24 @@ const actions = {
       project_no: z.string(),
       methods: z.object({ hourly: z.boolean().optional(), area: z.boolean().optional(), dms: z.boolean().optional(), historic: z.boolean().optional() }).optional(),
       design_override: z.number().optional().describe("Fixed design fee $ (bypasses the average); 0 clears it"),
+      sf_rate: z.number().optional().describe("$/SF for the area method on this project; 0 = config default"),
+      dms_fee: z.number().optional().describe("Fee curve $ entered by hand (replaces the calculated curve fee); 0 clears it"),
+      historic_fee: z.number().optional().describe("Historic comparables $ entered by hand (replaces the calculated figure); 0 clears it"),
       expedite: z.enum(["Standard", "Expedited", "Rush"]).optional(),
-      sf: z.number().optional(), construction_value: z.number().optional(),
+      sf: z.number().optional(), construction_value: z.number().optional().describe("0 clears it"),
       save: z.boolean().optional().describe("Default true; false = what-if only"),
     },
-    async handler({ project_no, methods, design_override, expedite, sf, construction_value, save = true }) {
+    async handler({ project_no, methods, expedite, sf, construction_value, save = true, ...given }) {
       const cfg = getConfig();
       const run = (db) => {
         const p0 = mustFind(db.tables.Projects, "project_no", project_no, "Project");
         const p = save ? p0 : { ...p0 };
         if (expedite) p.expedite = expedite;
-        if (sf !== undefined) p.sf = sf;
-        if (construction_value !== undefined) p.construction_value = construction_value;
+        if (sf !== undefined) p.sf = sf || "";
+        if (construction_value !== undefined) p.construction_value = construction_value || "";
         const prev = parseJSON(p.fee_detail, {}).options || {};
-        const options = { methods: { ...(prev.methods || {}), ...(methods || {}) }, design_override: design_override !== undefined ? design_override : prev.design_override };
+        const options = { methods: { ...(prev.methods || {}), ...(methods || {}) } };
+        for (const k of ["design_override", "sf_rate", "dms_fee", "historic_fee"]) options[k] = given[k] !== undefined ? given[k] : prev[k];
         const scope = db.tables.Scope.filter((s) => String(s.project_no) === String(project_no));
         const fee = estimateFee({ project: p, lines: scope, history: db.tables.FeeHistory, cfg, options });
         if (save) {
