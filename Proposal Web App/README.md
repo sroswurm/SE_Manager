@@ -34,6 +34,12 @@ Forwarded emails and reply chains use the client's message, not yours. Out-of-li
 
 Tune it in `config.json → email_parser`: keyword lists per project type and deliverable, rush/expedite words, `known_cities` (e.g. `"known_cities": {"Elberta": "AL"}`), and `auto_bid_default`.
 
+## Scope from client documents
+
+On the **Scope** step, drop the client's drawings, specs, RFP or geotech report onto **Client documents** (saved to `data/Documents/<project no>/`, set by `documents_root` in `config.json`). Then in Claude Desktop pick the **Draft scope from client documents** prompt, or say *"draft the scope for 26001 from the client documents"*. Claude reads every file and fills in the scope lines, project understanding, assumptions and exclusions, then tells you what to confirm. Click **Reload scope** in the web app to see it.
+
+Claude can read PDFs (text layer, page by page), Word `.docx`, Excel `.xlsx`, text/email files and images (PNG/JPG up to 5 MB). Scanned PDFs have no text layer, so export the key sheets as images instead.
+
 ## Lifecycle
 
 | # | Step | MCP tool(s) | Notes |
@@ -42,7 +48,7 @@ Tune it in `config.json → email_parser`: keyword lists per project type and de
 | 2 | Bid / no-bid | `decide_bid` | Checklist score; licensed-state checked automatically. **No bid closes the lead** |
 | 3 | Client | `find_clients`, `save_client` | Dedupes by email, phone, company, contact |
 | 4 | Project & folders | `create_project`, `folder_options`, `generate_folders` | Next number `YYNNN`, checked against the workbook **and** existing folders on the drive |
-| 5 | Scope / deliverables | `set_scope`, `set_terms` | Drawings, calcs, drafting, letters, reports (design pool); inspections, site visits, CA, shop-drawing review (add-ons) |
+| 5 | Scope / deliverables | `list_documents`, `read_document`, `set_scope`, `set_terms` | Drawings, calcs, drafting, letters, reports (design pool); inspections, site visits, CA, shop-drawing review (add-ons) |
 | 6 | Fee | `estimate_fee` | See below |
 | 7 | Milestones | `set_milestones` | Any of 35/50/75/100 %, dates from NTP, compressed for Expedited/Rush |
 | 8 | Proposal PDF | `generate_proposal` | Saved to `<project folder>\02_Contract & Proposal\<no> - TNSE Proposal R#.pdf` |

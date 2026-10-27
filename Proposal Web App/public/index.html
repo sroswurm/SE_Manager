@@ -69,6 +69,11 @@
   .seg button:last-child { border-right: 0; } .seg button.on { background: var(--navy); color: #fff; }
   .method { display: grid; grid-template-columns: 22px 190px 1fr 110px; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--rule-2); }
   .method.na { color: var(--faint); }
+  .drop { border: 2px dashed var(--rule); border-radius: 6px; padding: 22px; text-align: center; color: var(--muted); }
+  .drop.over { border-color: var(--navy); background: var(--shade); }
+  .drop .pick { display: inline; margin: 0; color: var(--navy); text-decoration: underline; cursor: pointer; text-transform: none; letter-spacing: 0; font-size: inherit; }
+  .docs { list-style: none; padding: 0; margin: 8px 0; } .docs li { display: flex; gap: 10px; align-items: center; padding: 4px 0; border-bottom: 1px solid var(--rule-2); }
+  .docs li small { color: var(--muted); margin-right: auto; } .docs li button { padding: 2px 8px; }
   .bar { height: 10px; background: var(--shade); border-radius: 5px; position: relative; overflow: hidden; }
   .bar i { position: absolute; inset: 0 auto 0 0; background: var(--navy-2); border-radius: 5px; }
   .method .d { font-size: 12px; color: var(--muted); }
@@ -131,6 +136,8 @@ function toast(msg, err = false) {
   const t = document.createElement("div"); t.className = "toast" + (err ? " err" : ""); t.textContent = msg;
   document.body.appendChild(t); setTimeout(() => t.remove(), err ? 6000 : 3000);
 }
+// A file dropped outside a drop zone would otherwise open in the tab and leave the app.
+addEventListener("dragover", (e) => e.preventDefault()); addEventListener("drop", (e) => e.preventDefault());
 async function guard(fn) { try { return await fn(); } catch (e) { toast(e.message, true); } }
 const form = (el) => Object.fromEntries([...el.querySelectorAll("[name]")].map((i) => [i.name, i.type === "number" ? (i.value === "" ? undefined : Number(i.value)) : (i.value.trim() === "" ? undefined : i.value.trim())]));
 const field = (name, label, value = "", { type = "text", wide = false, opts = null, ph = "", req = false } = {}) => {
@@ -401,10 +408,10 @@ function stepProject() {
   </div><div class="actions"><button class="primary">${p ? "Update project" : "Create project &amp; assign number"}</button></div></form>`;
   const tpl = S.settings.folder_templates;
   const folders = p ? `<h3>Project folders</h3>
-    ${p.folder_path ? `<div class="ok">Created: <span class="mono">${esc(p.folder_path)}</span></div>` : `<p class="sub">Folder will be created as <span class="mono">${esc(S.settings.projects_root_resolved)}${S.settings.projects_root_resolved.includes("\\") ? "\\" : "/"}${esc(p.project_no)} - ${esc(p.name)}</span></p>`}
+    ${p.folder_path ? `<div class="ok">Folder script generated for: <span class="mono">${esc(p.folder_path)}</span></div>` : `<p class="sub">Folder will be created as <span class="mono">${esc(S.settings.projects_root_resolved)}${S.settings.projects_root_resolved.includes("\\") ? "\\" : "/"}${esc(p.project_no)} - ${esc(p.name)}</span></p>`}
     <div class="folders" id="fl">${tpl.map((t) => `<label><input type="checkbox" value="${esc(t.name)}" ${t.default ? "checked" : ""}> ${esc(t.name)} ${t.children?.length ? `<small>${esc(t.children.join(", "))}</small>` : ""}</label>`).join("")}</div>
     ${field("extra", "Extra subfolders (one per line, e.g. 04_Design/Wind)", "", { type: "textarea" })}
-    <div class="actions"><button class="primary" id="mkf">${p.folder_path ? "Add selected folders" : "Generate folders"} →</button></div>` : "";
+    <div class="actions"><button class="primary" id="mkf">${p.folder_path ? "Download folder script again" : "Download folder script"} (.bat) →</button></div>` : "";
   $("#stepBody").innerHTML = `<div class="card"><h2>Project &amp; Folders</h2><p class="sub">${p ? `Project number <b class="mono">${esc(p.project_no)}</b>.` : "Creates the project record and assigns the next number (checked against existing folders)."}</p>${projForm}${folders}</div>`;
   $("#pf").onsubmit = (e) => { e.preventDefault(); guard(async () => {
     const a = form(e.target);
@@ -414,7 +421,9 @@ function stepProject() {
   if (p) $("#mkf").onclick = () => guard(async () => {
     const sel = [...$("#fl").querySelectorAll("input:checked")].map((i) => i.value);
     const r = await act("generate_folders", { project_no: p.project_no, folders: sel, extra: $("[name=extra]").value.split("\n").map((s) => s.trim()).filter(Boolean) });
-    toast(`${r.created} folder(s) created${r.existed ? `, ${r.existed} already existed` : ""}`);
+    const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(new Blob([r.script], { type: "application/bat" })), download: r.filename });
+    a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    toast(`Downloaded ${r.filename} — run it to create ${r.count} folder(s)`);
     await refresh(5);
   });
 }
@@ -437,13 +446,18 @@ function stepScope() {
     $("#lines").innerHTML = rows.map((r, i) => {
       const cat = cats.find((c) => c.type === r.type) || {};
       const basis = r.basis || cat.basis, fee = priceLine(r);
+      const rate = num(S.settings.rates[r.rate_key || cat.rate || "engineering"]), hours = r.hours ?? cat.hours;
+      // Qty × Unit $ = Build-up: hourly lines are hours × $/hr, per-each lines are count × $/unit.
+      const qty = basis === "hourly" ? `<input data-k="hours" type="number" step="any" value="${esc(hours)}" style="width:70px"> <small>hr</small>`
+        : basis === "each" ? `<input data-k="qty" type="number" step="1" value="${esc(r.qty || 1)}" style="width:70px"> <small>${esc(cat.unit || "ea")}</small>` : "";
+      const unit = basis === "hourly" ? `<span class="mono">${money(rate)}/hr</span>`
+        : `<input data-k="unit_fee" type="number" step="any" value="${esc(r.unit_fee || "")}" placeholder="${basis === "each" ? `${money(num(hours) * rate)} auto` : "lump $"}" style="width:100px">`;
       return `<tr data-i="${i}">
         <td><select data-k="type">${cats.map((c) => `<option ${c.type === r.type ? "selected" : ""}>${esc(c.type)}</option>`).join("")}</select><div class="sub" style="margin:2px 0 0;font-size:11px">${cat.pool === "addon" ? "add-on" : "design"} · ${esc(basis)}</div></td>
         <td><input data-k="description" value="${esc(r.description)}" placeholder="Prints on the proposal"></td>
-        <td><select data-k="rate_key">${rateKeys.map((k) => `<option ${(r.rate_key || cat.rate) === k ? "selected" : ""}>${k}</option>`).join("")}</select></td>
-        <td><input data-k="hours" type="number" step="any" value="${esc(r.hours ?? cat.hours)}" style="width:70px"></td>
-        <td>${basis === "each" ? `<input data-k="qty" type="number" step="1" value="${esc(r.qty || 1)}" style="width:60px">` : ""}</td>
-        <td>${basis !== "hourly" ? `<input data-k="unit_fee" type="number" step="any" value="${esc(r.unit_fee || "")}" placeholder="auto" style="width:90px">` : ""}</td>
+        <td><select data-k="rate_key">${rateKeys.map((k) => `<option value="${k}" ${(r.rate_key || cat.rate) === k ? "selected" : ""}>${k} · ${money(S.settings.rates[k])}/hr</option>`).join("")}</select></td>
+        <td style="white-space:nowrap">${qty}</td>
+        <td>${unit}</td>
         <td class="num">${money(fee)}</td><td><button type="button" data-del="${i}" title="Remove">✕</button></td></tr>`;
     }).join("");
     sums();
@@ -454,7 +468,12 @@ function stepScope() {
     $("#sums").innerHTML = `Design build-up <b class="mono">${money(design)}</b> &nbsp;·&nbsp; Add-ons <b class="mono">${money(addon)}</b>`;
   };
   $("#stepBody").innerHTML = `<div class="card"><h2>Scope &amp; Deliverables</h2><p class="sub">Design lines feed the hourly method and get the averaged design fee; add-ons (inspections, CA, reviews) are priced on top. Hours default from the catalog.</p>
-    <table><thead><tr><th>Deliverable</th><th>Description</th><th>Rate</th><th>Hours${""}</th><th>Qty</th><th>Unit / lump $</th><th class="num">Build-up</th><th></th></tr></thead><tbody id="lines"></tbody></table>
+    <h3>Client documents</h3>
+    <div class="drop" id="drop">Drop drawings, specs, the RFP or a geotech report here, or <label class="pick">browse<input type="file" id="pick" multiple hidden></label></div>
+    <ul class="docs" id="docs"></ul>
+    <p class="sub">To have Claude fill in the scope: in Claude Desktop pick the <b>Draft scope from client documents</b> prompt for project <b class="mono">${esc(p.project_no)}</b>, or say “draft the scope for ${esc(p.project_no)} from the client documents”. Then <button type="button" id="reloadScope">Reload scope</button></p>
+    <h3>Scope lines</h3>
+    <table><thead><tr><th>Deliverable</th><th>Description</th><th>Rate</th><th>Qty</th><th>Unit $</th><th class="num">Build-up</th><th></th></tr></thead><tbody id="lines"></tbody></table>
     <div class="row" style="justify-content:space-between;margin-top:10px"><div class="row"><select id="addType" style="width:auto">${cats.map((c) => `<option>${esc(c.type)}</option>`).join("")}</select><button id="add">+ Add line</button></div><div id="sums"></div></div>
     <h3>Assumptions</h3><textarea id="asm" style="min-height:90px">${esc((p.assumptions || []).join("\n"))}</textarea>
     <h3>Exclusions</h3><textarea id="exc" style="min-height:90px">${esc((p.exclusions || []).join("\n"))}</textarea>
@@ -466,8 +485,34 @@ function stepScope() {
     const r = rows[tr.dataset.i], k = e.target.dataset.k;
     r[k] = e.target.type === "number" ? (e.target.value === "" ? "" : Number(e.target.value)) : e.target.value;
     if (k === "type") { const c = cats.find((x) => x.type === r.type); Object.assign(r, { basis: undefined, rate_key: c.rate, hours: c.hours, qty: "", unit_fee: "" }); draw(); }
+    else if (k === "rate_key") draw(); // the $/hr shown in Unit $ follows the rate
     else { tr.querySelector(".num").textContent = money(priceLine(r)); sums(); } // no re-render: keeps focus in the next field
   };
+  const docUrl = (name) => `/api/docs/${encodeURIComponent(p.project_no)}/${encodeURIComponent(name)}`;
+  const size = (b) => b < 1048576 ? `${Math.max(1, Math.round(b / 1024))} KB` : `${(b / 1048576).toFixed(1)} MB`;
+  const drawDocs = async () => {
+    const { documents } = await act("list_documents", { project_no: p.project_no });
+    $("#docs").innerHTML = documents.length ? documents.map((d) => `<li><a href="${docUrl(d.name)}" target="_blank">${esc(d.name)}</a>
+      <small>${size(d.size)}${d.readable_as ? "" : " · Claude can't read this file type"}</small><button type="button" data-rm="${esc(d.name)}" title="Remove">✕</button></li>`).join("")
+      : `<li class="sub">No documents yet.</li>`;
+  };
+  const upload = (files) => guard(async () => {
+    if (!files.length) return;
+    for (const f of files) {
+      const r = await fetch(`/api/docs/${encodeURIComponent(p.project_no)}?name=${encodeURIComponent(f.name)}`, { method: "POST", body: f });
+      if (!r.ok) throw new Error((await r.json()).error || `Upload failed: ${f.name}`);
+    }
+    toast(`${files.length} document(s) added`); await drawDocs();
+  });
+  $("#drop").ondragover = (e) => { e.preventDefault(); $("#drop").classList.add("over"); };
+  $("#drop").ondragleave = () => $("#drop").classList.remove("over");
+  $("#drop").ondrop = (e) => { e.preventDefault(); $("#drop").classList.remove("over"); upload([...e.dataTransfer.files]); };
+  $("#pick").onchange = (e) => { upload([...e.target.files]); e.target.value = ""; };
+  $("#docs").onclick = (e) => { const n = e.target.dataset.rm; if (n && confirm(`Remove ${n}?`)) guard(async () => {
+    const r = await fetch(docUrl(n), { method: "DELETE" }); if (!r.ok) throw new Error((await r.json()).error); await drawDocs();
+  }); };
+  $("#reloadScope").onclick = () => refresh(5);
+  guard(drawDocs);
   $("#lines").onclick = (e) => { if (e.target.dataset.del) { rows.splice(Number(e.target.dataset.del), 1); draw(); } };
   $("#add").onclick = () => { const c = cats.find((x) => x.type === $("#addType").value); rows.push({ type: c.type, description: "", rate_key: c.rate, hours: c.hours }); draw(); };
   $("#saveScope").onclick = () => guard(async () => {
@@ -483,8 +528,15 @@ function stepFee() {
   const p = S.rec.project;
   let prev = {}; try { prev = JSON.parse(p.fee_detail || "{}").options || {}; } catch {}
   let opts = { methods: { ...(prev.methods || {}) }, design_override: prev.design_override || 0, expedite: p.expedite };
+  const fm = S.settings.fee_model;
   $("#stepBody").innerHTML = `<div class="card"><h2>Fee</h2><p class="sub">Design fee = average of the checked methods × schedule multiplier. Add-ons are added on top. Uncheck methods that don't fit this project.</p>
-    <div class="row"><label style="margin:0">Schedule</label><div class="seg" id="exp">${Object.keys(S.settings.fee_model.expedite).map((k) => `<button class="${opts.expedite === k ? "on" : ""}" data-v="${k}">${k} ×${S.settings.fee_model.expedite[k].fee_multiplier}</button>`).join("")}</div></div>
+    <div class="row"><label style="margin:0">Schedule</label><div class="seg" id="exp">${Object.keys(fm.expedite).map((k) => `<button class="${opts.expedite === k ? "on" : ""}" data-v="${k}">${k} ×${fm.expedite[k].fee_multiplier}</button>`).join("")}</div></div>
+    <div class="grid" id="fin" style="margin-top:12px">
+      ${field("sf", "Area (SF)", p.sf, { type: "number" })}${field("sf_rate", "$/SF", prev.sf_rate || "", { type: "number", ph: `blank = $${num(fm.sf_rate).toFixed(2)} default` })}
+      ${field("construction_value", "Construction value ($)", p.construction_value, { type: "number", ph: `blank = SF × $${fm.value_per_sf}` })}
+      ${field("dms_fee", "Fee curve fee ($)", prev.dms_fee || "", { type: "number", ph: "blank = calculated from curve" })}
+      ${field("historic_fee", "Historic comparison fee ($)", prev.historic_fee || "", { type: "number", ph: "blank = calculated from history" })}
+    </div>
     <div id="methods" style="margin-top:12px"></div><div id="fw"></div>
     <div class="row" style="margin-top:14px"><div style="width:220px">${field("ovr", "Design fee override ($)", opts.design_override || "", { type: "number", ph: "blank = use average" })}</div></div>
     <div id="tot"></div>
@@ -505,12 +557,14 @@ function stepFee() {
       <div class="total"><span>Proposal total</span><span class="v">${money(f.total)}</span></div></div>`;
   };
   const calc = (save = false) => guard(async () => {
-    const f = await act("estimate_fee", { project_no: p.project_no, methods: opts.methods, design_override: Number($("[name=ovr]").value || 0), expedite: opts.expedite, save });
+    const v = (n) => Number($(`[name=${n}]`).value || 0); // blank sends 0, which clears the value
+    const f = await act("estimate_fee", { project_no: p.project_no, methods: opts.methods, design_override: v("ovr"), expedite: opts.expedite, save,
+      sf: v("sf"), sf_rate: v("sf_rate"), construction_value: v("construction_value"), dms_fee: v("dms_fee"), historic_fee: v("historic_fee") });
     draw(f); return f;
   });
   $("#methods").onchange = (e) => { if (e.target.dataset.m) { opts.methods[e.target.dataset.m] = e.target.checked; calc(); } };
   $("#exp").onclick = (e) => { if (e.target.dataset.v) { opts.expedite = e.target.dataset.v; [...$("#exp").children].forEach((b) => b.classList.toggle("on", b === e.target)); calc(); } };
-  $("[name=ovr]").onchange = () => calc();
+  $("[name=ovr]").onchange = $("#fin").onchange = () => calc();
   $("#saveFee").onclick = async () => { const f = await calc(true); if (f) { toast(`Fee saved: ${money(f.total)}`); await refresh(7); } };
   calc();
 }

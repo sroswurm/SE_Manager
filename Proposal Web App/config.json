@@ -2,6 +2,7 @@
   "_readme": "Edit paths and rates here, or from the Settings page in the web app. Values marked VERIFY are placeholders.",
   "workbook": "./data/TNSE_Projects.xlsx",
   "projects_root": "./data/Projects",
+  "documents_root": "./data/Documents",
   "proposal_folder": "02_Contract & Proposal",
   "web_port": 4180,
   "firm": {
