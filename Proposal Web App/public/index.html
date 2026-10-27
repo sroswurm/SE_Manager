@@ -69,6 +69,11 @@
   .seg button:last-child { border-right: 0; } .seg button.on { background: var(--navy); color: #fff; }
   .method { display: grid; grid-template-columns: 22px 190px 1fr 110px; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--rule-2); }
   .method.na { color: var(--faint); }
+  .drop { border: 2px dashed var(--rule); border-radius: 6px; padding: 22px; text-align: center; color: var(--muted); }
+  .drop.over { border-color: var(--navy); background: var(--shade); }
+  .drop .pick { display: inline; margin: 0; color: var(--navy); text-decoration: underline; cursor: pointer; text-transform: none; letter-spacing: 0; font-size: inherit; }
+  .docs { list-style: none; padding: 0; margin: 8px 0; } .docs li { display: flex; gap: 10px; align-items: center; padding: 4px 0; border-bottom: 1px solid var(--rule-2); }
+  .docs li small { color: var(--muted); margin-right: auto; } .docs li button { padding: 2px 8px; }
   .bar { height: 10px; background: var(--shade); border-radius: 5px; position: relative; overflow: hidden; }
   .bar i { position: absolute; inset: 0 auto 0 0; background: var(--navy-2); border-radius: 5px; }
   .method .d { font-size: 12px; color: var(--muted); }
@@ -131,6 +136,8 @@ function toast(msg, err = false) {
   const t = document.createElement("div"); t.className = "toast" + (err ? " err" : ""); t.textContent = msg;
   document.body.appendChild(t); setTimeout(() => t.remove(), err ? 6000 : 3000);
 }
+// A file dropped outside a drop zone would otherwise open in the tab and leave the app.
+addEventListener("dragover", (e) => e.preventDefault()); addEventListener("drop", (e) => e.preventDefault());
 async function guard(fn) { try { return await fn(); } catch (e) { toast(e.message, true); } }
 const form = (el) => Object.fromEntries([...el.querySelectorAll("[name]")].map((i) => [i.name, i.type === "number" ? (i.value === "" ? undefined : Number(i.value)) : (i.value.trim() === "" ? undefined : i.value.trim())]));
 const field = (name, label, value = "", { type = "text", wide = false, opts = null, ph = "", req = false } = {}) => {
@@ -461,6 +468,11 @@ function stepScope() {
     $("#sums").innerHTML = `Design build-up <b class="mono">${money(design)}</b> &nbsp;·&nbsp; Add-ons <b class="mono">${money(addon)}</b>`;
   };
   $("#stepBody").innerHTML = `<div class="card"><h2>Scope &amp; Deliverables</h2><p class="sub">Design lines feed the hourly method and get the averaged design fee; add-ons (inspections, CA, reviews) are priced on top. Hours default from the catalog.</p>
+    <h3>Client documents</h3>
+    <div class=”drop” id=”drop”>Drop drawings, specs, the RFP or a geotech report here, or <label class=”pick”>browse<input type=”file” id=”pick” multiple hidden></label></div>
+    <ul class=”docs” id=”docs”></ul>
+    <p class=”sub”>To have Claude fill in the scope: in Claude Desktop pick the <b>Draft scope from client documents</b> prompt for project <b class=”mono”>${esc(p.project_no)}</b>, or say “draft the scope for ${esc(p.project_no)} from the client documents”. Then <button type=”button” id=”reloadScope”>Reload scope</button></p>
+    <h3>Scope lines</h3>
     <table><thead><tr><th>Deliverable</th><th>Description</th><th>Rate</th><th>Qty</th><th>Unit $</th><th class="num">Build-up</th><th></th></tr></thead><tbody id="lines"></tbody></table>
     <div class="row" style="justify-content:space-between;margin-top:10px"><div class="row"><select id="addType" style="width:auto">${cats.map((c) => `<option>${esc(c.type)}</option>`).join("")}</select><button id="add">+ Add line</button></div><div id="sums"></div></div>
     <h3>Assumptions</h3><textarea id="asm" style="min-height:90px">${esc((p.assumptions || []).join("\n"))}</textarea>
@@ -476,6 +488,31 @@ function stepScope() {
     else if (k === "rate_key") draw(); // the $/hr shown in Unit $ follows the rate
     else { tr.querySelector(".num").textContent = money(priceLine(r)); sums(); } // no re-render: keeps focus in the next field
   };
+  const docUrl = (name) => `/api/docs/${encodeURIComponent(p.project_no)}/${encodeURIComponent(name)}`;
+  const size = (b) => b < 1048576 ? `${Math.max(1, Math.round(b / 1024))} KB` : `${(b / 1048576).toFixed(1)} MB`;
+  const drawDocs = async () => {
+    const { documents } = await act("list_documents", { project_no: p.project_no });
+    $("#docs").innerHTML = documents.length ? documents.map((d) => `<li><a href="${docUrl(d.name)}" target="_blank">${esc(d.name)}</a>
+      <small>${size(d.size)}${d.readable_as ? "" : " · Claude can't read this file type"}</small><button type="button" data-rm="${esc(d.name)}" title="Remove">✕</button></li>`).join("")
+      : `<li class="sub">No documents yet.</li>`;
+  };
+  const upload = (files) => guard(async () => {
+    if (!files.length) return;
+    for (const f of files) {
+      const r = await fetch(`/api/docs/${encodeURIComponent(p.project_no)}?name=${encodeURIComponent(f.name)}`, { method: "POST", body: f });
+      if (!r.ok) throw new Error((await r.json()).error || `Upload failed: ${f.name}`);
+    }
+    toast(`${files.length} document(s) added`); await drawDocs();
+  });
+  $("#drop").ondragover = (e) => { e.preventDefault(); $("#drop").classList.add("over"); };
+  $("#drop").ondragleave = () => $("#drop").classList.remove("over");
+  $("#drop").ondrop = (e) => { e.preventDefault(); $("#drop").classList.remove("over"); upload([...e.dataTransfer.files]); };
+  $("#pick").onchange = (e) => { upload([...e.target.files]); e.target.value = ""; };
+  $("#docs").onclick = (e) => { const n = e.target.dataset.rm; if (n && confirm(`Remove ${n}?`)) guard(async () => {
+    const r = await fetch(docUrl(n), { method: "DELETE" }); if (!r.ok) throw new Error((await r.json()).error); await drawDocs();
+  }); };
+  $("#reloadScope").onclick = () => refresh(5);
+  guard(drawDocs);
   $("#lines").onclick = (e) => { if (e.target.dataset.del) { rows.splice(Number(e.target.dataset.del), 1); draw(); } };
   $("#add").onclick = () => { const c = cats.find((x) => x.type === $("#addType").value); rows.push({ type: c.type, description: "", rate_key: c.rate, hours: c.hours }); draw(); };
   $("#saveScope").onclick = () => guard(async () => {

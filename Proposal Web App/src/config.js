@@ -15,6 +15,7 @@ function getConfig() {
   const cfg = JSON.parse(fs.readFileSync(CONFIG_PATH, "utf8"));
   cfg.workbookPath = resolvePath(process.env.TNSE_WORKBOOK || cfg.workbook);
   cfg.projectsRoot = resolvePath(process.env.TNSE_PROJECTS_ROOT || cfg.projects_root);
+  cfg.documentsRoot = resolvePath(process.env.TNSE_DOCUMENTS_ROOT || cfg.documents_root || "./data/Documents");
   return cfg;
 }
 

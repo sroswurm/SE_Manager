@@ -7,6 +7,7 @@ const { withStore, read } = require("./store");
 const { getConfig, updateConfig, APP_DIR } = require("./config");
 const { estimateFee, priceLine } = require("./fee");
 const { folderScript, maxFolderNumber, safeName } = require("./folders");
+const { listDocs } = require("./documents");
 const { buildProposalPdf } = require("./proposal");
 const { parseEmail } = require("./parse-email");
 
@@ -325,6 +326,16 @@ const actions = {
         db.log(project_no, "generate_folders", `script for ${r.count} folder(s): ${r.folders.join(", ")}`);
         return r;
       });
+    },
+  },
+
+  list_documents: {
+    description: "Step 5 — List the client documents (drawings, specs, RFP, geotech…) uploaded for a project in the web app. Read each with read_document to draft the scope.",
+    input: { project_no: z.string() },
+    async handler({ project_no }) {
+      const cfg = getConfig();
+      await read((db) => mustFind(db.tables.Projects, "project_no", project_no, "Project"));
+      return { project_no, documents: listDocs(cfg, project_no) };
     },
   },
 

@@ -8,6 +8,7 @@ const { read } = require("./store");
 const { getConfig } = require("./config");
 const { estimateFee } = require("./fee");
 const { buildProposalPdf } = require("./proposal");
+const { saveDoc, deleteDoc, docPath } = require("./documents");
 
 const app = express();
 app.use(express.json({ limit: "2mb" }));
@@ -22,6 +23,21 @@ app.post("/api/action/:name", async (req, res) => {
     const msg = e.issues ? e.issues.map((i) => `${i.path.join(".") || "input"}: ${i.message}`).join("; ") : e.message;
     res.status(400).json({ error: msg });
   }
+});
+
+// Client documents: the browser posts each dropped file's bytes, named by ?name=.
+app.post("/api/docs/:no", express.raw({ type: () => true, limit: "250mb" }), async (req, res) => {
+  try {
+    const p = await read((db) => db.tables.Projects.find((x) => String(x.project_no) === req.params.no));
+    if (!p) throw new Error("Project not found");
+    res.json({ name: saveDoc(getConfig(), req.params.no, req.query.name, req.body) });
+  } catch (e) { res.status(400).json({ error: e.message }); }
+});
+app.get("/api/docs/:no/:name", (req, res) => {
+  try { res.sendFile(docPath(getConfig(), req.params.no, req.params.name)); } catch (e) { res.status(404).send(e.message); }
+});
+app.delete("/api/docs/:no/:name", (req, res) => {
+  try { deleteDoc(getConfig(), req.params.no, req.params.name); res.json({ ok: true }); } catch (e) { res.status(400).json({ error: e.message }); }
 });
 
 const lines = (v) => String(v || "").split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
