@@ -70,14 +70,18 @@ function estimateFee({ project, lines, history, cfg, options = {} }) {
     key: "hourly", label: "Hourly (scope build-up)", available: hourlyFee > 0, fee: hourlyFee,
     detail: `${designHours.toFixed(1)} hr across ${design.length} design line(s)`,
   });
+  // A $/SF entered for this project overrides the config rate (and opts in project types without area methods).
+  const sfRate = num(options.sf_rate) || num(fm.sf_rate);
   methods.push({
-    key: "area", label: "Area ($/SF)", available: sf > 0 && ptype.area_methods, fee: sf * num(fm.sf_rate),
-    detail: sf > 0 ? `${sf.toLocaleString()} SF × $${num(fm.sf_rate).toFixed(2)}/SF` : "needs SF",
+    key: "area", label: "Area ($/SF)", available: sf > 0 && (ptype.area_methods || num(options.sf_rate) > 0), fee: sf * sfRate,
+    detail: sf > 0 ? `${sf.toLocaleString()} SF × $${sfRate.toFixed(2)}/SF` : "needs SF",
   });
   const pct = dmsPct(fm.dms_curve, value) * num(ptype.dms_factor || 1);
   const share = num(fm.structural_share_pct) / 100;
+  const dmsCalc = value > 0 && ptype.area_methods && isFinite(pct);
+  const dmsFee = value * (pct / 100) * share;
   methods.push({
-    key: "dms", label: "FL DMS fee curve", available: value > 0 && ptype.area_methods && isFinite(pct), fee: value * (pct / 100) * share,
+    key: "dms", label: "FL DMS fee curve", available: dmsCalc, fee: dmsCalc ? dmsFee : 0,
     detail: value > 0 ? `$${Math.round(value).toLocaleString()}${valueGiven ? "" : " (est. from SF)"} × ${isFinite(pct) ? pct.toFixed(2) : "—"}% × ${(share * 100).toFixed(0)}% structural` : "needs SF or construction value",
   });
 
@@ -102,6 +106,14 @@ function estimateFee({ project, lines, history, cfg, options = {} }) {
     comps: comps.map((h) => ({ project_no: h.project_no, name: h.name, sf: h.sf, fee: h.fee })),
   });
 
+  // Fees entered by hand replace the calculated curve / comparables figure.
+  for (const [key, opt] of [["dms", "dms_fee"], ["historic", "historic_fee"]]) {
+    const m = methods.find((x) => x.key === key), v = num(options[opt]);
+    if (v <= 0) continue;
+    m.detail = `entered manually${m.available ? ` (calculated: $${Math.round(m.fee).toLocaleString()})` : ""}`;
+    Object.assign(m, { available: true, fee: v, manual: true });
+  }
+
   const toggles = options.methods || {};
   for (const m of methods) m.enabled = m.available && (toggles[m.key] !== undefined ? !!toggles[m.key] : true);
   const used = methods.filter((m) => m.enabled);
@@ -110,7 +122,7 @@ function estimateFee({ project, lines, history, cfg, options = {} }) {
   const exp = (fm.expedite || {})[project.expedite || "Standard"] || { fee_multiplier: 1 };
   const overridden = num(options.design_override) > 0;
   const designFee = roundTo(overridden ? num(options.design_override) : base * num(exp.fee_multiplier || 1), num(fm.round_to));
-  const addonFee = roundTo(addons.reduce((s, l) => s + l.fee, 0), num(fm.round_to));
+  const addonFee = addons.reduce((s, l) => s + l.fee, 0); // itemized on the proposal, so not rounded
 
   // Allocate the design fee back to the design lines (proportional to their build-up) for the proposal.
   const alloc = design.map((l) => ({ ...l, proposal_fee: hourlyFee > 0 ? roundTo((designFee * l.fee) / hourlyFee, num(fm.round_to)) : 0 }));

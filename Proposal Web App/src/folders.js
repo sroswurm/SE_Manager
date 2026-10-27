@@ -52,4 +52,40 @@ function generateFolders({ cfg, projectNo, name, selection, extra = [] }) {
   return { base, folders: picked.map((t) => t.name), created: created.length, existed: existed.length, copied };
 }
 
-module.exports = { generateFolders, maxFolderNumber, projectFolderName, safeName };
+// Same layout as generateFolders, but nothing is touched on disk: returns a Windows .bat
+// that creates the folders (and copies seed files) when the user runs it.
+function folderScript({ cfg, projectNo, name, selection, extra = [] }) {
+  const root = cfg.projectsRoot;
+  if (!root) throw new Error("projects_root is not set in config.json");
+  const w = path.win32;
+  const base = w.join(root, projectFolderName(projectNo, name));
+  const picked = cfg.folder_templates.filter((t) => (selection ? selection.includes(t.name) : t.default));
+  const dirs = [base];
+  for (const t of picked) {
+    dirs.push(w.join(base, safeName(t.name)));
+    for (const c of t.children || []) dirs.push(w.join(base, safeName(t.name), safeName(c)));
+  }
+  for (const e of extra) dirs.push(w.join(base, ...String(e).split(/[\\/]/).map(safeName).filter(Boolean)));
+  const seeds = (cfg.seed_files || []).filter((s) => s.from).map((s) => {
+    const destDir = w.join(base, s.to || "");
+    return { from: s.from, destDir, dest: w.join(destDir, w.basename(s.from).replace(/^TEMPLATE/i, projectNo)) };
+  }).filter((s) => dirs.includes(s.destDir)); // only seed into folders that were selected
+
+  const q = (p) => `"${p.replace(/%/g, "%%")}"`; // % is the only char safeName leaves that a quoted .bat path can't hold
+  const lines = [
+    "@echo off",
+    "chcp 65001 >nul",
+    `rem Project folders for ${projectNo} - ${safeName(name)}`.replace(/%/g, "%%"),
+    `if not exist ${q(base + "\\")} mkdir ${q(base)} || (echo Could not create ${q(base)} - check the projects drive is mapped. & pause & exit /b 1)`,
+    ...dirs.slice(1).map((d) => `if not exist ${q(d + "\\")} mkdir ${q(d)}`),
+    ...seeds.map((s) => `if exist ${q(s.from)} if not exist ${q(s.dest)} copy ${q(s.from)} ${q(s.dest)} >nul`),
+    `echo Created ${q(base)}`,
+    `start "" ${q(base)}`,
+  ];
+  return {
+    base, folders: picked.map((t) => t.name), count: dirs.length,
+    filename: `${projectNo} folders.bat`, script: lines.join("\r\n") + "\r\n",
+  };
+}
+
+module.exports = { generateFolders, folderScript, maxFolderNumber, projectFolderName, safeName };
