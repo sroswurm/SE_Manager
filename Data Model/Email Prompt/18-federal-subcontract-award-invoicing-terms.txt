@@ -1,0 +1,21 @@
+From: Dana Reyes <dreyes@meridianfed.example>
+To: engineer@examplestructural.example
+Cc: Subcontracts Desk <subk@meridianfed.example>
+Date: Sat, 26 Sep 2026 09:02:47 -0400
+Subject: SC-26-118 - subcontract executed - NS Norfolk CEP-204
+Attachments: MFB_Subcontract_SC-26-118.pdf (1.1 MB)
+
+The subcontract is fully executed and attached. The price is the $19,200 lump sum from your proposal revision 2, the one that includes our responses to the DrChecks comments. Treat this as notice to proceed. The 65% date of October 30 is firm. The Navy has already moved it once and will not move it again, so please plan around it.
+
+Invoicing:
+
+- Three milestones: 50% at the 65% submittal, 40% at the 100% submittal, and 10% at final / as-built support
+- Send invoices to subk@meridianfed.example, not to me
+- Put subcontract number SC-26-118 on every invoice
+- Net 45 from the date we receive the invoice
+
+I got the chiller weights from the vendor submittal last week and the 1988 record drawings from the plant, both are in the folder I shared on September 15. The record drawings have sheet S-4 missing. I've asked the plant to look for it.
+
+We have a coordination call every Thursday at 10:00. Your first one is this week. Please bring any questions about the existing crane rail, because the plant says nobody has a load rating for it.
+
+Dana

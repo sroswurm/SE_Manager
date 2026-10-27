@@ -1,0 +1,20 @@
+From: Owen Pruitt <owen@saltmarshdesign.example>
+To: engineer@examplestructural.example
+Date: Mon, 20 Jul 2026 17:26:03 -0400
+Subject: RE: Atlantic Ave - geotech is in, and one change to what I asked for
+Attachments: Atlantic_geotech_2026-06.pdf (9.5 MB)
+
+Geotech finally came in, attached. Their recommendation is driven timber piles and the report has the capacities. They also want pile driving records kept for every pile.
+
+The change: I called the Town this morning and the building official says the pile driving has to be observed by the engineer of record. So please add to the proposal:
+
+- Pile driving criteria in the drawings, based on the geotech
+- Your inspection when the piles are driven
+
+That makes three site visits for the project: piles, framing, and a final. If that changes the number, tell me and I will explain it to the owners. I'd rather hear a bigger number now than a surprise later.
+
+Timing matters on this one. The owners' construction loan closes in October and the lender wants the permit application filed by September 14, so I need the revised proposal this week.
+
+One other thing. The Town confirmed the design flood elevation is 16 ft (BFE 14 plus the two feet of freeboard), and my CDs still show the lowest floor a foot under that. I'm fixing the floor elevations and will send the update this week.
+
+Owen

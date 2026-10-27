@@ -1,0 +1,32 @@
+From: Devin Hollis <dhollis@palmettoline.example>
+To: engineer@examplestructural.example
+Cc: Marisol Tran <mtran@palmettoline.example>
+Date: Mon, 26 Oct 2026 09:14:22 -0400
+Subject: Fee request - 327 Pitt St, Mt Pleasant - second story addition
+Attachments: PLA_Pitt_SD_2026-10-24.pdf (4.1 MB)
+
+Hi,
+
+Hope the Wentworth punch list is behind you. We've got another one for you if you have room in November.
+
+327 Pitt Street in the Old Village. Existing 1955 one-story brick veneer ranch on a slab, CMU stem wall, roughly 1,850 SF. Owners want to add a full second story over most of the footprint plus a new roof, and keep the slab. SD set attached, 11 sheets. The second floor is about 1,400 SF with a master suite and two bedrooms, and there's a small covered porch off the back of the new floor.
+
+Things I already know you're going to ask about:
+
+- We don't have original drawings. I'm guessing a 16" wide footing but nobody knows. Figure on verification pits.
+- No geotech. Owners would rather not pay for one unless you say it's required.
+- Flood zone X per the town GIS, so no elevation issues, but it's Mt Pleasant so I assume we're in the 150-something mph bucket and you'll want the full shear wall workup.
+- Existing ceiling joists are 2x6 at 16", so I assume the new floor framing goes over them and we're not reusing anything.
+- We'd like to keep the existing exterior walls as the bearing line if at all possible. The owners are not excited about stripping brick.
+
+Deliverables same as usual: sealed S-sheets for permit, calcs if the town asks, and a couple of site visits (one for the pits, one for framing). Town of Mt Pleasant is reviewing, not the county.
+
+Can you send a fee by end of week? Owners are trying to decide between us and a design-build outfit so a number sooner rather than later helps. A range is fine for now if you don't want to commit.
+
+Thanks,
+Devin
+
+Devin Hollis, AIA
+Project Architect | Palmetto Line Architecture
+212 Meeting St, 3rd Floor, Charleston SC 29401
+843-555-0119
