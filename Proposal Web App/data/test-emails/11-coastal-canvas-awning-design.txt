@@ -1,0 +1,24 @@
+From: Ray Delgado <ray@coastalcanvas.example>
+Sent: Monday, October 26, 2026 11:30 AM
+To: jacob@truenorthstructuraleng.com
+Subject: Awning Design - Shrimp Boat Ln Restaurant
+
+Jacob,
+
+We have another delegated design job. Three motorized retractable awnings at a waterfront restaurant at 1330 Shrimp Boat Ln, Mount Pleasant, SC 29464 (Charleston County). Each awning projects up to 20 ft.
+
+We need:
+- Wind design in both retracted and deployed positions (with manufacturer deployment limits)
+- Lateral arm reactions
+- Ledger and anchor design into existing CMU wall
+- Review of the existing wall for the added loads
+- Sealed calc package, anchorage detail, and delegated design letter
+
+Schedule is flexible — sometime in the next 6 weeks would be fine. Send a proposal when you get a chance.
+
+Ray Delgado
+Project Manager
+Coastal Canvas & Metal Works
+7710 Dorchester Rd
+North Charleston, SC 29418
+843-555-0201
