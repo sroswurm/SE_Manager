@@ -1,0 +1,217 @@
+{
+  "schema_version": "0.1.0",
+  "as_of": "2026-10-27",
+  "definitions": {
+    "outcome": "won = agreement, purchase order or email acceptance received. lost = declined or awarded elsewhere. pending = proposal out or not yet sent.",
+    "job_complete": "true once the last deliverable is issued and the last invoice sent. false while work remains. null when the job is not won.",
+    "quoted_fee": "Latest fee agreed (won) or proposed (pending). For not-to-exceed jobs, the cap. null if no proposal has been sent.",
+    "final_fee": "Total billed at completion, including additional services. null until job_complete is true.",
+    "hours_spent": "All hours charged to the job to date, including pre-award proposal time."
+  },
+  "outcomes": [
+    {
+      "job_number": "26-0012",
+      "client_id": "fde480bc-88fd-5ccf-ae2e-731d9eaac4b9",
+      "location": {
+        "street": "9 Wentworth Ct",
+        "city": "Charleston",
+        "state": "SC",
+        "zip": "29401",
+        "county": "Charleston"
+      },
+      "outcome": "won",
+      "job_complete": false,
+      "quoted_fee": 5200,
+      "final_fee": null,
+      "hours_spent": 31.5,
+      "note": "Permit set and revision issued. Framing site visit (the 20% milestone) has not happened yet, so the job is not final."
+    },
+    {
+      "job_number": "26-0019",
+      "client_id": "fde480bc-88fd-5ccf-ae2e-731d9eaac4b9",
+      "location": {
+        "street": "618 King St",
+        "city": "Charleston",
+        "state": "SC",
+        "zip": "29403",
+        "county": "Charleston"
+      },
+      "outcome": "won",
+      "job_complete": false,
+      "quoted_fee": 11800,
+      "final_fee": null,
+      "hours_spent": 61.0,
+      "note": "DD narrative billed. Permit set and construction administration remain."
+    },
+    {
+      "job_number": "26-0023",
+      "client_id": "bcf80fad-8451-5a37-a20c-3500e4c91090",
+      "location": {
+        "street": "200 Foster Creek Rd",
+        "city": "Goose Creek",
+        "state": "SC",
+        "zip": "29445",
+        "county": "Berkeley"
+      },
+      "outcome": "won",
+      "job_complete": true,
+      "quoted_fee": 4400,
+      "final_fee": 4400,
+      "hours_spent": 24.0,
+      "note": "Single milestone billed on delivery of stamped shops and calcs. No additional services."
+    },
+    {
+      "job_number": "26-0027",
+      "client_id": "d49be7dd-59f0-505e-a7a2-70ea460fa99d",
+      "location": {
+        "street": "7395 Ashley Phosphate Rd",
+        "city": "North Charleston",
+        "state": "SC",
+        "zip": "29418",
+        "county": "Charleston"
+      },
+      "outcome": "won",
+      "job_complete": true,
+      "quoted_fee": 1850,
+      "final_fee": 1850,
+      "hours_spent": 9.5,
+      "note": "Letter issued 10 days after the request. No additional services."
+    },
+    {
+      "job_number": "26-0031",
+      "client_id": "e7c87972-23ce-573c-aaae-b93a834dde72",
+      "location": {
+        "street": "1622 Fort Johnson Rd",
+        "city": "Charleston",
+        "state": "SC",
+        "zip": "29412",
+        "county": "Charleston"
+      },
+      "outcome": "won",
+      "job_complete": true,
+      "quoted_fee": 1650,
+      "final_fee": 1805,
+      "hours_spent": 13.5,
+      "note": "Final is the 1,650 lump sum plus one extra hour at 155 to relocate a post after the verification pit."
+    },
+    {
+      "job_number": "26-0034",
+      "client_id": "536bcb1c-1c38-5635-9d32-8738213beef1",
+      "location": {
+        "street": "418 Laurel St",
+        "city": "Summerville",
+        "state": "SC",
+        "zip": "29483",
+        "county": "Dorchester"
+      },
+      "outcome": "won",
+      "job_complete": true,
+      "quoted_fee": 900,
+      "final_fee": 775,
+      "hours_spent": 5.0,
+      "note": "Hourly with a 900 cap. 5.0 hours at 155, so 125 under the cap."
+    },
+    {
+      "job_number": "26-0038",
+      "client_id": "59365542-a56f-58f3-9c6a-d998a9266145",
+      "location": {
+        "street": "2618 Atlantic Ave",
+        "city": "Sullivan's Island",
+        "state": "SC",
+        "zip": "29482",
+        "county": "Charleston"
+      },
+      "outcome": "won",
+      "job_complete": false,
+      "quoted_fee": 14500,
+      "final_fee": null,
+      "hours_spent": 58.5,
+      "note": "Foundation package billed (35%). Permit set and construction administration remain."
+    },
+    {
+      "job_number": "26-0041",
+      "client_id": "f05aabc5-53c0-592e-81f0-0b9880f2ae14",
+      "location": {
+        "street": "1950 Savannah Hwy",
+        "city": "Charleston",
+        "state": "SC",
+        "zip": "29407",
+        "county": "Charleston"
+      },
+      "outcome": "pending",
+      "job_complete": null,
+      "quoted_fee": 28500,
+      "final_fee": null,
+      "hours_spent": 14.5,
+      "note": "Proposal rev 1 sent Sep 30. Client said the board would decide Oct 20. No response recorded as of Oct 27."
+    },
+    {
+      "job_number": "26-0044",
+      "client_id": "056a5f65-b32c-5957-ae85-23e625052520",
+      "location": {
+        "street": "Bldg CEP-204, Naval Station Norfolk",
+        "city": "Norfolk",
+        "state": "VA",
+        "zip": "23511",
+        "county": "Norfolk City"
+      },
+      "outcome": "won",
+      "job_complete": false,
+      "quoted_fee": 19200,
+      "final_fee": null,
+      "hours_spent": 33.0,
+      "note": "65% submittal due Oct 30. 100% submittal and final support remain."
+    },
+    {
+      "job_number": "26-0046",
+      "client_id": "bcf80fad-8451-5a37-a20c-3500e4c91090",
+      "location": {
+        "street": "1330 Shrimp Boat Ln",
+        "city": "Mount Pleasant",
+        "state": "SC",
+        "zip": "29464",
+        "county": "Charleston"
+      },
+      "outcome": "pending",
+      "job_complete": null,
+      "quoted_fee": null,
+      "final_fee": null,
+      "hours_spent": 1.0,
+      "note": "Client asked for a fee by Oct 16. No proposal sent yet. A draft fee exists but was not shared."
+    },
+    {
+      "job_number": "26-0049",
+      "client_id": "f05aabc5-53c0-592e-81f0-0b9880f2ae14",
+      "location": {
+        "street": "1950 Savannah Hwy",
+        "city": "Charleston",
+        "state": "SC",
+        "zip": "29407",
+        "county": "Charleston"
+      },
+      "outcome": "won",
+      "job_complete": false,
+      "quoted_fee": 6500,
+      "final_fee": null,
+      "hours_spent": 22.0,
+      "note": "Hourly with a 6,500 cap. Interim memo billed Oct 13. At 22.0 hours about 52% of the cap is used."
+    },
+    {
+      "job_number": "26-0052",
+      "client_id": "fde480bc-88fd-5ccf-ae2e-731d9eaac4b9",
+      "location": {
+        "street": "327 Pitt St",
+        "city": "Mount Pleasant",
+        "state": "SC",
+        "zip": "29464",
+        "county": "Charleston"
+      },
+      "outcome": "pending",
+      "job_complete": null,
+      "quoted_fee": null,
+      "final_fee": null,
+      "hours_spent": 0.5,
+      "note": "Inquiry received Oct 26. No proposal yet."
+    }
+  ]
+}
