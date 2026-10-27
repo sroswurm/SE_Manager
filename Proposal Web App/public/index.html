@@ -469,9 +469,9 @@ function stepScope() {
   };
   $("#stepBody").innerHTML = `<div class="card"><h2>Scope &amp; Deliverables</h2><p class="sub">Design lines feed the hourly method and get the averaged design fee; add-ons (inspections, CA, reviews) are priced on top. Hours default from the catalog.</p>
     <h3>Client documents</h3>
-    <div class="drop" id="drop">Drop drawings, specs, the RFP or a geotech report here, or <label class="pick">browse<input type="file" id="pick" multiple hidden></label></div>
-    <ul class="docs" id="docs"></ul>
-    <p class="sub">To have Claude fill in the scope: in Claude Desktop pick the <b>Draft scope from client documents</b> prompt for project <b class="mono">${esc(p.project_no)}</b>, or say “draft the scope for ${esc(p.project_no)} from the client documents”. Then <button type="button" id="reloadScope">Reload scope</button></p>
+    <div class=”drop” id=”drop”>Drop drawings, specs, the RFP or a geotech report here, or <label class=”pick”>browse<input type=”file” id=”pick” multiple hidden></label></div>
+    <ul class=”docs” id=”docs”></ul>
+    <p class=”sub”>To have Claude fill in the scope: in Claude Desktop pick the <b>Draft scope from client documents</b> prompt for project <b class=”mono”>${esc(p.project_no)}</b>, or say “draft the scope for ${esc(p.project_no)} from the client documents”. Then <button type=”button” id=”reloadScope”>Reload scope</button></p>
     <h3>Scope lines</h3>
     <table><thead><tr><th>Deliverable</th><th>Description</th><th>Rate</th><th>Qty</th><th>Unit $</th><th class="num">Build-up</th><th></th></tr></thead><tbody id="lines"></tbody></table>
     <div class="row" style="justify-content:space-between;margin-top:10px"><div class="row"><select id="addType" style="width:auto">${cats.map((c) => `<option>${esc(c.type)}</option>`).join("")}</select><button id="add">+ Add line</button></div><div id="sums"></div></div>
