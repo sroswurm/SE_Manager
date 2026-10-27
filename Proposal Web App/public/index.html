@@ -1,0 +1,622 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TNSE Project Manager</title>
+<style>
+  :root {
+    --ink: #13233a; --navy: #1f3a5f; --navy-2: #2d5585; --muted: #5d6877; --faint: #8a94a3;
+    --paper: #f5f3ee; --card: #ffffff; --rule: #d9dde3; --rule-2: #e9ecf0; --shade: #eef2f6;
+    --ok: #2f7d4f; --warn: #a2620b; --bad: #a83a32; --accent: #c9822b;
+    --mono: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, monospace;
+    --sans: "Segoe UI", system-ui, -apple-system, Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 14px/1.45 var(--sans); color: var(--ink); background: var(--paper);
+    background-image: linear-gradient(var(--rule-2) 1px, transparent 1px), linear-gradient(90deg, var(--rule-2) 1px, transparent 1px);
+    background-size: 24px 24px; }
+  header { display: flex; align-items: center; gap: 16px; padding: 10px 20px; background: var(--navy); color: #fff; position: sticky; top: 0; z-index: 5; }
+  header .brand { font-weight: 700; letter-spacing: .08em; font-size: 13px; text-transform: uppercase; }
+  header .brand small { font-weight: 400; opacity: .7; letter-spacing: .02em; margin-left: 8px; text-transform: none; }
+  header .sp { flex: 1; }
+  button { font: inherit; cursor: pointer; border-radius: 4px; border: 1px solid var(--rule); background: #fff; color: var(--ink); padding: 6px 12px; }
+  button:hover { border-color: var(--navy-2); }
+  button.primary { background: var(--navy); color: #fff; border-color: var(--navy); }
+  button.primary:hover { background: var(--navy-2); }
+  button.ghost { background: transparent; color: inherit; border-color: rgba(255,255,255,.35); }
+  button.danger { color: var(--bad); }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  .layout { display: grid; grid-template-columns: 320px 1fr; min-height: calc(100vh - 46px); }
+  aside { border-right: 1px solid var(--rule); background: rgba(255,255,255,.75); padding: 14px; overflow: auto; max-height: calc(100vh - 46px); position: sticky; top: 46px; }
+  aside .filters { display: flex; gap: 6px; margin: 10px 0; flex-wrap: wrap; }
+  aside .filters button { font-size: 12px; padding: 3px 8px; }
+  aside .filters button.on { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .lead { border: 1px solid var(--rule); background: #fff; border-radius: 6px; padding: 9px 11px; margin-bottom: 8px; cursor: pointer; }
+  .lead:hover { border-color: var(--navy-2); }
+  .lead.sel { border-color: var(--navy); box-shadow: inset 3px 0 0 var(--accent); }
+  .lead .t { font-weight: 600; }
+  .lead .m { color: var(--muted); font-size: 12px; display: flex; justify-content: space-between; gap: 6px; }
+  .chip { display: inline-block; font-size: 11px; padding: 1px 7px; border-radius: 10px; background: var(--shade); color: var(--navy); white-space: nowrap; }
+  .chip.New { background: #fff3dc; color: var(--warn); } .chip.NoBid, .chip.Lost { background: #f6e3e1; color: var(--bad); }
+  .chip.Won { background: #e2f2e8; color: var(--ok); } .chip.ProposalIssued { background: #e3ecf8; color: var(--navy-2); }
+  main { padding: 20px 28px 60px; max-width: 1100px; width: 100%; }
+  .steps { display: flex; gap: 0; margin-bottom: 18px; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; background: #fff; }
+  .step { flex: 1; padding: 8px 6px; text-align: center; font-size: 12px; border-right: 1px solid var(--rule); color: var(--faint); cursor: default; user-select: none; }
+  .step:last-child { border-right: 0; }
+  .step b { display: block; font-family: var(--mono); font-size: 11px; }
+  .step.open { color: var(--ink); cursor: pointer; }
+  .step.done { color: var(--ok); cursor: pointer; }
+  .step.cur { background: var(--navy); color: #fff; }
+  .card { background: var(--card); border: 1px solid var(--rule); border-radius: 6px; padding: 18px 20px; margin-bottom: 16px; }
+  .card h2 { margin: 0 0 4px; font-size: 16px; } .card h3 { margin: 18px 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--navy); }
+  .sub { color: var(--muted); margin: 0 0 14px; font-size: 13px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px 14px; }
+  .grid .wide { grid-column: 1 / -1; }
+  label { display: block; font-size: 11.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  input, select, textarea { width: 100%; font: inherit; padding: 6px 8px; border: 1px solid var(--rule); border-radius: 4px; background: #fff; color: var(--ink); margin-top: 3px; }
+  input:focus, select:focus, textarea:focus { outline: 2px solid #c7d6ea; border-color: var(--navy-2); }
+  textarea { min-height: 70px; resize: vertical; }
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); border-bottom: 2px solid var(--navy); padding: 6px; }
+  td { border-bottom: 1px solid var(--rule-2); padding: 5px 6px; vertical-align: top; }
+  td input, td select { margin: 0; padding: 4px 6px; }
+  .num { text-align: right; font-family: var(--mono); white-space: nowrap; }
+  .seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; }
+  .seg button { border: 0; border-right: 1px solid var(--rule); border-radius: 0; }
+  .seg button:last-child { border-right: 0; } .seg button.on { background: var(--navy); color: #fff; }
+  .method { display: grid; grid-template-columns: 22px 190px 1fr 110px; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--rule-2); }
+  .method.na { color: var(--faint); }
+  .bar { height: 10px; background: var(--shade); border-radius: 5px; position: relative; overflow: hidden; }
+  .bar i { position: absolute; inset: 0 auto 0 0; background: var(--navy-2); border-radius: 5px; }
+  .method .d { font-size: 12px; color: var(--muted); }
+  .total { display: flex; justify-content: space-between; align-items: baseline; padding: 12px 0 0; }
+  .total .v { font: 700 26px var(--mono); }
+  .kv { display: grid; grid-template-columns: 160px 1fr; gap: 4px 12px; font-size: 13px; } .kv div:nth-child(odd) { color: var(--muted); }
+  .warn { background: #fff7e8; border: 1px solid #f0d9ae; color: #6d4a10; padding: 8px 12px; border-radius: 4px; margin: 8px 0; font-size: 13px; }
+  .ok { background: #ecf6ef; border: 1px solid #c3e1cc; color: #1f5a37; padding: 8px 12px; border-radius: 4px; margin: 8px 0; font-size: 13px; }
+  .folders { columns: 2; } .folders label { text-transform: none; letter-spacing: 0; font-size: 13.5px; color: var(--ink); padding: 3px 0; break-inside: avoid; display: flex; gap: 8px; align-items: baseline; }
+  .folders input { width: auto; } .folders small { color: var(--faint); }
+  .check { display: flex; gap: 8px; align-items: center; text-transform: none; letter-spacing: 0; font-size: 13.5px; color: var(--ink); }
+  .check input { width: auto; margin: 0; }
+  .empty { text-align: center; color: var(--muted); padding: 60px 20px; }
+  .toast { position: fixed; top: 58px; right: 18px; background: var(--ink); color: #fff; padding: 10px 14px; border-radius: 6px; max-width: 420px; z-index: 50; box-shadow: 0 6px 24px rgba(0,0,0,.2); }
+  .toast.err { background: var(--bad); }
+  dialog { border: 1px solid var(--rule); border-radius: 8px; padding: 0; width: min(860px, 94vw); }
+  dialog::backdrop { background: rgba(19,35,58,.35); }
+  dialog .hd { padding: 14px 20px; border-bottom: 1px solid var(--rule); display: flex; justify-content: space-between; align-items: center; }
+  dialog .bd { padding: 16px 20px; max-height: 70vh; overflow: auto; }
+  iframe.pdf { width: 100%; height: 75vh; border: 1px solid var(--rule); border-radius: 4px; background: #fff; }
+  .mono { font-family: var(--mono); font-size: 12.5px; word-break: break-all; }
+  @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } aside { position: static; max-height: none; } .folders { columns: 1; } .method { grid-template-columns: 22px 1fr 100px; } .method .bar { display: none; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">True North Structural <small>Project Manager</small></div>
+  <div class="sp"></div>
+  <button class="ghost" id="btnSettings">Settings</button>
+  <button class="primary" id="btnNew" style="background:var(--accent);border-color:var(--accent)">+ New RFP</button>
+</header>
+<div class="layout">
+  <aside>
+    <input id="q" placeholder="Search pipeline…">
+    <div class="filters" id="filters"></div>
+    <div id="pipeline"></div>
+  </aside>
+  <main id="main"><div class="empty">Select a lead on the left, or start a <b>New RFP</b>.</div></main>
+</div>
+
+<dialog id="dlgSettings">
+  <div class="hd"><b>Settings</b><button onclick="dlgSettings.close()">Close</button></div>
+  <div class="bd" id="settingsBody"></div>
+</dialog>
+
+<script>
+const $ = (s, el = document) => el.querySelector(s);
+const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const money = (v) => (v === "" || v == null || isNaN(v)) ? "—" : "$" + Math.round(Number(v)).toLocaleString("en-US");
+const num = (v) => (v === "" || v == null || isNaN(Number(v))) ? 0 : Number(v);
+const fmtDate = (s) => s ? new Date(s + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "";
+
+async function act(name, args = {}) {
+  const r = await fetch(`/api/action/${name}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(args) });
+  const j = await r.json();
+  if (!r.ok) throw new Error(j.error || "Request failed");
+  return j;
+}
+function toast(msg, err = false) {
+  const t = document.createElement("div"); t.className = "toast" + (err ? " err" : ""); t.textContent = msg;
+  document.body.appendChild(t); setTimeout(() => t.remove(), err ? 6000 : 3000);
+}
+async function guard(fn) { try { return await fn(); } catch (e) { toast(e.message, true); } }
+const form = (el) => Object.fromEntries([...el.querySelectorAll("[name]")].map((i) => [i.name, i.type === "number" ? (i.value === "" ? undefined : Number(i.value)) : (i.value.trim() === "" ? undefined : i.value.trim())]));
+const field = (name, label, value = "", { type = "text", wide = false, opts = null, ph = "", req = false } = {}) => {
+  const ctl = opts ? `<select name="${name}">${opts.map((o) => `<option ${o === value ? "selected" : ""}>${esc(o)}</option>`).join("")}</select>`
+    : type === "textarea" ? `<textarea name="${name}" placeholder="${esc(ph)}">${esc(value)}</textarea>`
+    : `<input name="${name}" type="${type}" value="${esc(value)}" placeholder="${esc(ph)}" ${type === "number" ? 'step="any"' : ""} ${req ? "required" : ""}>`;
+  return `<div class="${wide ? "wide" : ""}"><label>${esc(label)}${req ? " *" : ""}</label>${ctl}</div>`;
+};
+
+let S = { settings: null, pipeline: [], filter: "Active", sel: null, rec: null, step: 1 };
+const STEPS = ["Intake", "Bid / No-bid", "Client", "Project & Folders", "Scope", "Fee", "Milestones", "Proposal"];
+const FILTERS = { Active: (r) => !["No Bid", "Lost", "Won"].includes(r.status), All: () => true, New: (r) => r.status === "New", Issued: (r) => r.status === "Proposal Issued", Won: (r) => r.status === "Won", Closed: (r) => ["No Bid", "Lost"].includes(r.status) };
+
+async function loadPipeline() {
+  const r = await act("list_pipeline", { limit: 500 });
+  S.pipeline = r.rows; renderPipeline();
+}
+function renderPipeline() {
+  $("#filters").innerHTML = Object.keys(FILTERS).map((k) => `<button class="${S.filter === k ? "on" : ""}" data-f="${k}">${k}</button>`).join("");
+  const q = $("#q").value.toLowerCase();
+  const rows = S.pipeline.filter(FILTERS[S.filter]).filter((r) => !q || JSON.stringify(r).toLowerCase().includes(q));
+  $("#pipeline").innerHTML = rows.length ? rows.map((r) => `
+    <div class="lead ${S.sel === r.lead_id ? "sel" : ""}" data-id="${esc(r.lead_id)}">
+      <div class="t">${esc(r.project_name)}</div>
+      <div class="m"><span>${esc(r.company || "—")}</span><span class="mono">${esc(r.project_no || r.lead_id)}</span></div>
+      <div class="m" style="margin-top:4px"><span class="chip ${esc(String(r.status).replace(/\W/g, "").replace("BidPreparingProposal", "Bid"))}">${esc(r.status)}</span>
+      <span>${r.fee_total ? money(r.fee_total) : esc(r.next_step ? "→ " + r.next_step : "")}</span></div>
+    </div>`).join("") : `<div class="sub" style="padding:10px">Nothing here.</div>`;
+}
+$("#filters").onclick = (e) => { if (e.target.dataset.f) { S.filter = e.target.dataset.f; renderPipeline(); } };
+$("#q").oninput = renderPipeline;
+$("#pipeline").onclick = (e) => { const el = e.target.closest(".lead"); if (el) openLead(el.dataset.id); };
+
+async function openLead(id, step) {
+  S.sel = id; renderPipeline();
+  S.rec = await act("get_record", { ref: id });
+  S.step = step || firstOpenStep();
+  render();
+}
+async function refresh(step) { await loadPipeline(); await openLead(S.sel, step); }
+
+function doneMap() {
+  const { lead = {}, project, scope = [], milestones = [] } = S.rec || {};
+  return [!!lead.lead_id, !!lead.decision, !!lead.client_id, !!(project && project.folder_path), scope.length > 0, !!(project && project.fee_total), milestones.length > 0, !!(project && project.proposal_path)];
+}
+function openMap() {
+  const lead = S.rec?.lead || {}, hasProject = !!S.rec?.project, bid = lead.decision === "Bid";
+  // Folders are not required to continue; once a project exists, steps 5–8 are reachable.
+  return [true, true, bid, bid && (!!lead.client_id || hasProject), hasProject, hasProject, hasProject, hasProject];
+}
+function firstOpenStep() { const d = doneMap(), o = openMap(); const i = d.findIndex((x, k) => !x && o[k]); return i === -1 ? 8 : i + 1; }
+
+function render() {
+  const d = doneMap(), o = openMap();
+  const steps = `<div class="steps">${STEPS.map((s, i) => `<div class="step ${o[i] ? "open" : ""} ${d[i] ? "done" : ""} ${S.step === i + 1 ? "cur" : ""}" data-s="${i + 1}"><b>${String(i + 1).padStart(2, "0")}${d[i] ? " ✓" : ""}</b>${s}</div>`).join("")}</div>`;
+  const p = S.rec.project, l = S.rec.lead;
+  const head = `<div class="row" style="justify-content:space-between;margin-bottom:12px"><div><div style="font-size:20px;font-weight:700">${esc(p?.name || l.project_name)}</div>
+    <div class="sub" style="margin:0">${esc(p ? "Project " + p.project_no : "Lead " + l.lead_id)} · ${esc(S.rec.client?.company || l.company || "")} · <span class="chip">${esc(l.status)}</span></div></div></div>`;
+  $("#main").innerHTML = head + steps + `<div id="stepBody"></div>`;
+  $(".steps").onclick = (e) => { const s = e.target.closest(".step"); if (s && s.classList.contains("open")) { S.step = Number(s.dataset.s); render(); } };
+  [null, stepIntake, stepBid, stepClient, stepProject, stepScope, stepFee, stepMilestones, stepProposal][S.step]();
+}
+
+// ── 1 Intake
+function intakeForm(l = {}) {
+  return `<div class="grid">
+    <div class="wide"><label>Source</label><div class="seg" id="src">${["phone", "text", "email", "web", "referral", "other"].map((s) => `<button type="button" class="${(l.source || "email") === s ? "on" : ""}" data-v="${s}">${s}</button>`).join("")}</div></div>
+    ${field("project_name", "Project name", l.project_name, { req: true, wide: true })}
+    ${field("contact_name", "Contact", l.contact_name)}${field("company", "Company", l.company)}
+    ${field("phone", "Phone", l.phone, { type: "tel" })}${field("email", "Email", l.email, { type: "email" })}
+    ${field("location", "Location / address", l.location)}${field("state", "State", l.state, { ph: "FL" })}
+    ${field("response_due", "Response due", l.response_due, { type: "date" })}${field("received", "Received", l.received || new Date().toLocaleDateString("en-CA"), { type: "date" })}
+    ${field("description", "Request summary", l.description, { type: "textarea", wide: true })}
+    ${field("raw_message", "Original message (paste email / text / call notes)", l.raw_message, { type: "textarea", wide: true })}
+  </div>`;
+}
+// ── New RFP: paste the email → review the draft → one click creates everything
+function newRfp() {
+  S.sel = null; S.rec = null; renderPipeline();
+  $("#main").innerHTML = `<div class="card"><h2>New RFP from email</h2>
+    <p class="sub">Paste the whole email — headers and signature included — or a text message or call notes. Nothing is saved until you review it.</p>
+    <textarea id="paste" style="min-height:280px;font:13px/1.45 var(--mono)" placeholder="From: …&#10;Subject: …&#10;&#10;Hi Jacob, …"></textarea>
+    <div class="actions" style="justify-content:space-between"><button id="manual" type="button">Enter manually instead</button><button class="primary" id="readEmail">Read email →</button></div></div>
+    <div id="review"></div>`;
+  $("#manual").onclick = manualRfp;
+  $("#paste").focus();
+  $("#readEmail").onclick = () => guard(async () => {
+    const text = $("#paste").value.trim();
+    if (!text) throw new Error("Paste the email first");
+    renderReview(text, await act("parse_email", { text }));
+  });
+}
+
+function renderReview(text, d) {
+  const why = Object.fromEntries((d.notes || []).map((n) => { const i = n.indexOf(": "); return [n.slice(0, i), n.slice(i + 2)]; }));
+  const low = new Set(d.low_confidence || []);
+  const types = S.settings.project_types.map((t) => t.name);
+  const cats = S.settings.deliverable_types;
+  // field() + confidence highlight and the reason the parser chose the value
+  const f = (name, label, value, opts = {}) => {
+    const key = name.split(".").pop();
+    const flag = low.has(key) ? ` <span class="chip New" title="${esc(why[key] || "guess")}">check</span>` : why[key] ? ` <span class="sub" style="font-size:11px;text-transform:none" title="${esc(why[key])}">ⓘ</span>` : "";
+    return field(name, label, value, opts).replace(`${esc(label)}${opts.req ? " *" : ""}</label>`, `${esc(label)}${opts.req ? " *" : ""}${flag}</label>`);
+  };
+  const L = d.lead, C = d.client, P = d.project;
+  let scope = d.scope.map((s) => ({ ...s }));
+  const matches = d.client_matches || [];
+  $("#review").innerHTML = `<div class="card"><h2>Review</h2>
+    <p class="sub">Fields marked <span class="chip New">check</span> are guesses; hover ⓘ to see where a value came from. ${(d.missing || []).length ? `Not found: <b>${esc(d.missing.join(", "))}</b>.` : ""}</p>
+    ${d.licensed_state ? "" : `<div class="warn">${esc(P.state)} is outside the firm's licensed states — the lead will be logged but not marked Bid.</div>`}
+    <form id="rv">
+    <h3 style="margin-top:4px">Request</h3><div class="grid">
+      ${f("lead.source", "Source", L.source, { opts: ["email", "text", "phone", "web", "referral", "other"] })}
+      ${f("lead.project_name", "Project name", L.project_name, { wide: true })}
+      ${f("lead.response_due", "Response due", L.response_due, { type: "date" })}${f("lead.received", "Received", L.received || new Date().toLocaleDateString("en-CA"), { type: "date" })}
+      ${f("lead.description", "Project understanding (prints on proposal)", L.description, { type: "textarea", wide: true })}
+    </div>
+    <h3>Client</h3>
+    ${matches.length ? `<div class="ok" style="margin-top:0">Existing client match: ${matches.map((m, i) => `<label class="check" style="display:inline-flex;margin-right:14px"><input type="radio" name="clientPick" value="${esc(m.client_id)}" ${i === 0 ? "checked" : ""}> ${esc(m.company || m.contact_name)} <span class="mono">(${esc(m.client_id)})</span></label>`).join("")}<label class="check" style="display:inline-flex"><input type="radio" name="clientPick" value=""> Create new</label></div>` : ""}
+    <div class="grid">
+      ${f("client.contact_name", "Contact", C.contact_name)}${f("client.title", "Title", C.title)}${f("client.company", "Company", C.company)}
+      ${f("client.client_type", "Client type", C.client_type || "Owner", { opts: ["Owner", "Architect", "Contractor", "Developer", "Government", "Engineer", "Other"] })}
+      ${f("client.phone", "Phone", C.phone)}${f("client.email", "Email", C.email)}
+      ${f("client.address", "Mailing address", C.address)}${f("client.city", "City", C.city)}${f("client.state", "State", C.state)}${f("client.zip", "ZIP", C.zip)}
+    </div>
+    <h3>Project</h3><div class="grid">
+      ${f("project.address", "Site address", P.address)}${f("project.city", "City", P.city)}${f("project.state", "State", P.state)}
+      ${f("project.project_type", "Project type", types.includes(P.project_type) ? P.project_type : "Other", { opts: types })}
+      ${f("project.sf", "Area (SF)", P.sf, { type: "number" })}${f("project.construction_value", "Construction value ($)", P.construction_value, { type: "number" })}
+      ${f("project.expedite", "Schedule", P.expedite || "Standard", { opts: Object.keys(S.settings.fee_model.expedite) })}
+      ${f("project.start_date", "Anticipated NTP", P.start_date, { type: "date" })}
+    </div>
+    <h3>Scope (draft)</h3>
+    <table><thead><tr><th>Deliverable</th><th>Qty</th><th>Why</th><th></th></tr></thead><tbody id="rvScope"></tbody></table>
+    <div class="row" style="margin-top:8px"><select id="rvAdd" style="width:auto">${cats.map((c) => `<option>${esc(c.type)}</option>`).join("")}</select><button type="button" id="rvAddBtn">+ Add</button></div>
+    <h3>Automate</h3>
+    <div class="row" style="gap:18px">
+      <label class="check"><input type="checkbox" id="stBid" ${d.licensed_state ? "checked" : ""}> Mark as Bid</label>
+      <label class="check"><input type="checkbox" id="stFolders" checked> Create default folders</label>
+      <label class="check"><input type="checkbox" id="stFee" checked> Draft scope &amp; estimate fee</label>
+      <label class="check"><input type="checkbox" id="stMs" checked> Default milestones</label>
+      <label class="check"><input type="checkbox" id="stProp"> Generate proposal PDF</label>
+    </div>
+    <div class="actions"><button class="primary" id="go">Create project →</button></div></form></div>`;
+  const drawScope = () => {
+    $("#rvScope").innerHTML = scope.map((s, i) => {
+      const c = cats.find((x) => x.type === s.type) || {};
+      return `<tr><td>${esc(s.type)} <span class="sub" style="font-size:11px">${c.pool === "addon" ? "add-on" : "design"}</span></td>
+        <td>${c.basis === "each" ? `<input type="number" data-q="${i}" value="${esc(s.qty || 1)}" style="width:70px">` : ""}</td>
+        <td class="sub" style="font-size:12px">${esc(s.why || "")}</td><td><button type="button" data-x="${i}">✕</button></td></tr>`;
+    }).join("") || `<tr><td colspan="4" class="sub">No deliverables — add at least one to estimate a fee.</td></tr>`;
+  };
+  drawScope();
+  $("#rvScope").oninput = (e) => { if (e.target.dataset.q) scope[e.target.dataset.q].qty = Number(e.target.value) || 1; };
+  $("#rvScope").onclick = (e) => { if (e.target.dataset.x) { scope.splice(Number(e.target.dataset.x), 1); drawScope(); } };
+  $("#rvAddBtn").onclick = () => { scope.push({ type: $("#rvAdd").value, why: "added" }); drawScope(); };
+  $("#review").scrollIntoView({ behavior: "smooth" });
+  $("#rv").onsubmit = (e) => { e.preventDefault(); guard(async () => {
+    const o = { lead: {}, client: {}, project: {} };
+    for (const el of e.target.querySelectorAll("[name*='.']")) {
+      const [grp, key] = el.name.split(".");
+      const v = el.type === "number" ? (el.value === "" ? undefined : Number(el.value)) : el.value.trim();
+      if (v !== undefined && v !== "") o[grp][key] = v;
+    }
+    o.lead.raw_message = text;
+    o.lead.state = o.project.state;
+    o.lead.location = [o.project.address, o.project.city].filter(Boolean).join(", ");
+    o.project.name = o.lead.project_name;
+    o.project.description = o.lead.description;
+    o.scope = scope.map(({ why, ...s }) => s);
+    const pick = $("input[name=clientPick]:checked");
+    const fee = $("#stFee").checked;
+    $("#go").disabled = true; $("#go").textContent = "Working…";
+    try {
+      const r = await act("quick_start", { overrides: o, client_id: pick && pick.value ? pick.value : undefined,
+        steps: { bid: $("#stBid").checked, folders: $("#stFolders").checked, scope: fee, fee, milestones: $("#stMs").checked, proposal: $("#stProp").checked } });
+      r.warnings.forEach((w) => toast(w, true));
+      toast(r.done.join(" · "));
+      await loadPipeline();
+      await openLead(r.lead_id, r.stopped_at === "bid" ? 2 : r.proposal ? 8 : fee ? 6 : 5);
+    } finally { if ($("#go")) { $("#go").disabled = false; $("#go").textContent = "Create project →"; } }
+  }); };
+}
+
+function manualRfp() {
+  $("#main").innerHTML = `<div class="card"><h2>New RFP</h2><p class="sub">Log the request as it came in. You'll make the bid / no-bid call next.</p>
+    <form id="f">${intakeForm()}<div class="actions"><button class="primary">Save &amp; continue →</button></div></form></div>`;
+  $("#src").onclick = (e) => { if (e.target.dataset.v) { [...$("#src").children].forEach((b) => b.classList.toggle("on", b === e.target)); } };
+  $("#f").onsubmit = (e) => { e.preventDefault(); guard(async () => {
+    const a = form(e.target); a.source = $("#src .on").dataset.v;
+    const r = await act("intake_rfp", a);
+    r.flags.forEach((f) => toast(f, true));
+    if (r.possible_client_matches.length) toast(`${r.possible_client_matches.length} existing client match(es) found — see Client step.`);
+    await loadPipeline(); await openLead(r.lead_id, 2);
+  }); };
+}
+$("#btnNew").onclick = newRfp;
+
+function stepIntake() {
+  const l = S.rec.lead;
+  $("#stepBody").innerHTML = `<div class="card"><h2>Intake</h2><p class="sub">Received ${fmtDate(l.received)} by ${esc(l.source)}.</p>
+    <div class="kv">${[["Contact", l.contact_name], ["Company", l.company], ["Phone", l.phone], ["Email", l.email], ["Location", [l.location, l.state].filter(Boolean).join(", ")], ["Response due", fmtDate(l.response_due)], ["Summary", l.description]].map(([k, v]) => `<div>${k}</div><div>${esc(v || "—")}</div>`).join("")}</div>
+    ${l.raw_message ? `<h3>Original message</h3><pre style="white-space:pre-wrap;font:13px var(--sans);background:var(--shade);padding:10px;border-radius:4px">${esc(l.raw_message)}</pre>` : ""}</div>`;
+}
+
+// ── 2 Bid
+function stepBid() {
+  const l = S.rec.lead, crit = S.settings.bid_criteria;
+  const licensed = !l.state || S.settings.firm.licensed_states.includes(String(l.state).toUpperCase());
+  $("#stepBody").innerHTML = `<div class="card"><h2>Bid / No-bid</h2><p class="sub">Score the opportunity, then decide. No-bid closes the lead.</p>
+    ${licensed ? `<div class="ok">Project state ${esc(l.state || "(not given)")} — within licensed states.</div>` : `<div class="warn">${esc(l.state)} is <b>not</b> one of the firm's licensed states (${S.settings.firm.licensed_states.join(", ")}).</div>`}
+    <div id="crit">${Object.entries(crit).map(([k, v]) => `<label class="check" style="padding:4px 0"><input type="checkbox" data-k="${k}"> ${esc(v)}</label>`).join("")}</div>
+    <div style="margin-top:8px">Score: <b id="score" class="mono">—</b></div>
+    ${field("reason", "Reason / notes", l.decision_reason, { type: "textarea" })}
+    ${l.decision ? `<div class="${l.decision === "Bid" ? "ok" : "warn"}">Decision recorded: <b>${esc(l.decision)}</b> (${esc(l.bid_score)}%)</div>` : ""}
+    <div class="actions"><button class="danger" id="nobid">No bid — close lead</button><button class="primary" id="bid">Bid — continue →</button></div></div>`;
+  const calc = () => { const c = [...$("#crit").querySelectorAll("input")]; const v = [licensed, ...c.map((i) => i.checked)]; $("#score").textContent = Math.round((v.filter(Boolean).length / v.length) * 100) + "%"; };
+  $("#crit").onchange = calc; calc();
+  const go = (decision) => guard(async () => {
+    const checklist = Object.fromEntries([...$("#crit").querySelectorAll("input")].map((i) => [i.dataset.k, i.checked]));
+    await act("decide_bid", { lead_id: l.lead_id, decision, reason: $("[name=reason]").value, checklist });
+    toast(decision === "bid" ? "Marked as Bid" : "Lead closed — No Bid");
+    await refresh(decision === "bid" ? 3 : 2);
+  });
+  $("#bid").onclick = () => go("bid"); $("#nobid").onclick = () => go("no_bid");
+}
+
+// ── 3 Client
+function stepClient() {
+  const l = S.rec.lead, c = S.rec.client;
+  $("#stepBody").innerHTML = `<div class="card"><h2>Client</h2><p class="sub">Link an existing client or create a new one. Matches by email, phone, company and name are suggested.</p>
+    ${c ? `<div class="ok">Linked to <b>${esc(c.company || c.contact_name)}</b> (${esc(c.client_id)}).</div>` : ""}
+    <div class="row"><input id="cq" style="max-width:360px" value="${esc(l.company || l.email || l.contact_name || "")}" placeholder="Search clients"><button id="cs">Search</button></div>
+    <div id="cres" style="margin-top:10px"></div>
+    <h3>${c ? "Edit client" : "New client"}</h3>
+    <form id="cf"><div class="grid">
+      ${field("company", "Company", c?.company ?? l.company)}${field("contact_name", "Contact", c?.contact_name ?? l.contact_name)}${field("title", "Title", c?.title)}
+      ${field("phone", "Phone", c?.phone ?? l.phone)}${field("email", "Email", c?.email ?? l.email)}${field("client_type", "Client type", c?.client_type || "Owner", { opts: ["Owner", "Architect", "Contractor", "Developer", "Government", "Engineer", "Other"] })}
+      ${field("address", "Mailing address", c?.address, { wide: true })}${field("city", "City", c?.city)}${field("state", "State", c?.state)}${field("zip", "ZIP", c?.zip)}
+      ${field("billing_contact", "Billing contact", c?.billing_contact)}${field("billing_email", "Billing email", c?.billing_email)}
+      ${field("notes", "Notes", c?.notes, { type: "textarea", wide: true })}
+    </div><div class="actions"><button class="primary">${c ? "Update client" : "Create client &amp; link"} →</button></div></form></div>`;
+  const search = () => guard(async () => {
+    const r = await act("find_clients", { query: $("#cq").value });
+    $("#cres").innerHTML = r.count ? `<table><tr><th>ID</th><th>Company</th><th>Contact</th><th>Email</th><th></th></tr>${r.clients.map((x) => `<tr><td class="mono">${esc(x.client_id)}</td><td>${esc(x.company)}</td><td>${esc(x.contact_name)}</td><td>${esc(x.email)}</td><td><button data-c="${esc(x.client_id)}">Use</button></td></tr>`).join("")}</table>` : `<div class="sub">No matches — create a new client below.</div>`;
+  });
+  $("#cs").onclick = search; if ($("#cq").value) search();
+  $("#cres").onclick = (e) => { if (e.target.dataset.c) guard(async () => { await act("save_client", { client_id: e.target.dataset.c, lead_id: l.lead_id }); toast("Client linked"); await refresh(4); }); };
+  $("#cf").onsubmit = (e) => { e.preventDefault(); guard(async () => {
+    const r = await act("save_client", { ...form(e.target), client_id: c?.client_id, lead_id: l.lead_id });
+    if (r.possible_duplicates.length) toast(`Heads up: possible duplicate of ${r.possible_duplicates.join(", ")}`, true);
+    await refresh(4);
+  }); };
+}
+
+// ── 4 Project & folders
+function stepProject() {
+  const l = S.rec.lead, p = S.rec.project;
+  const types = S.settings.project_types.map((t) => t.name);
+  const projForm = `<form id="pf"><div class="grid">
+    ${field("name", "Project name", p?.name ?? l.project_name, { req: true, wide: true })}
+    ${field("address", "Site address", p?.address ?? l.location)}${field("city", "City", p?.city)}${field("state", "State", p?.state ?? l.state ?? "FL")}
+    ${field("project_type", "Project type", p?.project_type || types[0], { opts: types })}
+    ${field("sf", "Area (SF)", p?.sf, { type: "number" })}${field("construction_value", "Construction value ($)", p?.construction_value, { type: "number", ph: "blank = SF × $/SF" })}
+    ${field("expedite", "Schedule", p?.expedite || "Standard", { opts: Object.keys(S.settings.fee_model.expedite) })}
+    ${field("start_date", "Anticipated NTP", p?.start_date, { type: "date" })}
+    ${field("description", "Project understanding (prints on proposal)", p?.description ?? l.description, { type: "textarea", wide: true })}
+  </div><div class="actions"><button class="primary">${p ? "Update project" : "Create project &amp; assign number"}</button></div></form>`;
+  const tpl = S.settings.folder_templates;
+  const folders = p ? `<h3>Project folders</h3>
+    ${p.folder_path ? `<div class="ok">Created: <span class="mono">${esc(p.folder_path)}</span></div>` : `<p class="sub">Folder will be created as <span class="mono">${esc(S.settings.projects_root_resolved)}${S.settings.projects_root_resolved.includes("\\") ? "\\" : "/"}${esc(p.project_no)} - ${esc(p.name)}</span></p>`}
+    <div class="folders" id="fl">${tpl.map((t) => `<label><input type="checkbox" value="${esc(t.name)}" ${t.default ? "checked" : ""}> ${esc(t.name)} ${t.children?.length ? `<small>${esc(t.children.join(", "))}</small>` : ""}</label>`).join("")}</div>
+    ${field("extra", "Extra subfolders (one per line, e.g. 04_Design/Wind)", "", { type: "textarea" })}
+    <div class="actions"><button class="primary" id="mkf">${p.folder_path ? "Add selected folders" : "Generate folders"} →</button></div>` : "";
+  $("#stepBody").innerHTML = `<div class="card"><h2>Project &amp; Folders</h2><p class="sub">${p ? `Project number <b class="mono">${esc(p.project_no)}</b>.` : "Creates the project record and assigns the next number (checked against existing folders)."}</p>${projForm}${folders}</div>`;
+  $("#pf").onsubmit = (e) => { e.preventDefault(); guard(async () => {
+    const a = form(e.target);
+    if (p) await act("update_project", { project_no: p.project_no, ...a }); else { const r = await act("create_project", { lead_id: l.lead_id, ...a }); toast(`Project ${r.project_no} created`); }
+    await refresh(4);
+  }); };
+  if (p) $("#mkf").onclick = () => guard(async () => {
+    const sel = [...$("#fl").querySelectorAll("input:checked")].map((i) => i.value);
+    const r = await act("generate_folders", { project_no: p.project_no, folders: sel, extra: $("[name=extra]").value.split("\n").map((s) => s.trim()).filter(Boolean) });
+    toast(`${r.created} folder(s) created${r.existed ? `, ${r.existed} already existed` : ""}`);
+    await refresh(5);
+  });
+}
+
+// ── 5 Scope
+function priceLine(l) {
+  const cat = S.settings.deliverable_types.find((d) => d.type === l.type) || {};
+  const basis = l.basis || cat.basis || "hourly", rate = num(S.settings.rates[l.rate_key || cat.rate || "engineering"]);
+  const hours = l.hours === "" || l.hours == null ? num(cat.hours) : num(l.hours);
+  if (basis === "hourly") return hours * rate;
+  if (basis === "each") return (num(l.qty) || 1) * (num(l.unit_fee) || hours * rate);
+  return num(l.unit_fee) || hours * rate;
+}
+function stepScope() {
+  const p = S.rec.project;
+  let rows = (S.rec.scope || []).map((s) => ({ type: s.type, description: s.description, basis: s.basis, rate_key: s.rate_key, hours: s.hours, qty: s.qty, unit_fee: s.unit_fee }));
+  const cats = S.settings.deliverable_types;
+  const rateKeys = Object.keys(S.settings.rates).filter((k) => !k.startsWith("_"));
+  const draw = () => {
+    $("#lines").innerHTML = rows.map((r, i) => {
+      const cat = cats.find((c) => c.type === r.type) || {};
+      const basis = r.basis || cat.basis, fee = priceLine(r);
+      return `<tr data-i="${i}">
+        <td><select data-k="type">${cats.map((c) => `<option ${c.type === r.type ? "selected" : ""}>${esc(c.type)}</option>`).join("")}</select><div class="sub" style="margin:2px 0 0;font-size:11px">${cat.pool === "addon" ? "add-on" : "design"} · ${esc(basis)}</div></td>
+        <td><input data-k="description" value="${esc(r.description)}" placeholder="Prints on the proposal"></td>
+        <td><select data-k="rate_key">${rateKeys.map((k) => `<option ${(r.rate_key || cat.rate) === k ? "selected" : ""}>${k}</option>`).join("")}</select></td>
+        <td><input data-k="hours" type="number" step="any" value="${esc(r.hours ?? cat.hours)}" style="width:70px"></td>
+        <td>${basis === "each" ? `<input data-k="qty" type="number" step="1" value="${esc(r.qty || 1)}" style="width:60px">` : ""}</td>
+        <td>${basis !== "hourly" ? `<input data-k="unit_fee" type="number" step="any" value="${esc(r.unit_fee || "")}" placeholder="auto" style="width:90px">` : ""}</td>
+        <td class="num">${money(fee)}</td><td><button type="button" data-del="${i}" title="Remove">✕</button></td></tr>`;
+    }).join("");
+    sums();
+  };
+  const sums = () => {
+    let design = 0, addon = 0;
+    rows.forEach((r) => { const c = cats.find((x) => x.type === r.type) || {}; (c.pool === "addon" ? (addon += priceLine(r)) : (design += priceLine(r))); });
+    $("#sums").innerHTML = `Design build-up <b class="mono">${money(design)}</b> &nbsp;·&nbsp; Add-ons <b class="mono">${money(addon)}</b>`;
+  };
+  $("#stepBody").innerHTML = `<div class="card"><h2>Scope &amp; Deliverables</h2><p class="sub">Design lines feed the hourly method and get the averaged design fee; add-ons (inspections, CA, reviews) are priced on top. Hours default from the catalog.</p>
+    <table><thead><tr><th>Deliverable</th><th>Description</th><th>Rate</th><th>Hours${""}</th><th>Qty</th><th>Unit / lump $</th><th class="num">Build-up</th><th></th></tr></thead><tbody id="lines"></tbody></table>
+    <div class="row" style="justify-content:space-between;margin-top:10px"><div class="row"><select id="addType" style="width:auto">${cats.map((c) => `<option>${esc(c.type)}</option>`).join("")}</select><button id="add">+ Add line</button></div><div id="sums"></div></div>
+    <h3>Assumptions</h3><textarea id="asm" style="min-height:90px">${esc((p.assumptions || []).join("\n"))}</textarea>
+    <h3>Exclusions</h3><textarea id="exc" style="min-height:90px">${esc((p.exclusions || []).join("\n"))}</textarea>
+    <div class="sub" style="margin-top:4px">One item per line.</div>
+    <div class="actions"><button class="primary" id="saveScope">Save scope →</button></div></div>`;
+  draw();
+  $("#lines").oninput = $("#lines").onchange = (e) => {
+    const tr = e.target.closest("tr"); if (!tr || !e.target.dataset.k) return;
+    const r = rows[tr.dataset.i], k = e.target.dataset.k;
+    r[k] = e.target.type === "number" ? (e.target.value === "" ? "" : Number(e.target.value)) : e.target.value;
+    if (k === "type") { const c = cats.find((x) => x.type === r.type); Object.assign(r, { basis: undefined, rate_key: c.rate, hours: c.hours, qty: "", unit_fee: "" }); draw(); }
+    else { tr.querySelector(".num").textContent = money(priceLine(r)); sums(); } // no re-render: keeps focus in the next field
+  };
+  $("#lines").onclick = (e) => { if (e.target.dataset.del) { rows.splice(Number(e.target.dataset.del), 1); draw(); } };
+  $("#add").onclick = () => { const c = cats.find((x) => x.type === $("#addType").value); rows.push({ type: c.type, description: "", rate_key: c.rate, hours: c.hours }); draw(); };
+  $("#saveScope").onclick = () => guard(async () => {
+    const clean = rows.map((r) => Object.fromEntries(Object.entries(r).filter(([, v]) => v !== "" && v !== undefined && v !== null)));
+    const split = (s) => s.split("\n").map((x) => x.trim()).filter(Boolean);
+    await act("set_scope", { project_no: p.project_no, lines: clean, assumptions: split($("#asm").value), exclusions: split($("#exc").value) });
+    toast("Scope saved"); await refresh(6);
+  });
+}
+
+// ── 6 Fee
+function stepFee() {
+  const p = S.rec.project;
+  let prev = {}; try { prev = JSON.parse(p.fee_detail || "{}").options || {}; } catch {}
+  let opts = { methods: { ...(prev.methods || {}) }, design_override: prev.design_override || 0, expedite: p.expedite };
+  $("#stepBody").innerHTML = `<div class="card"><h2>Fee</h2><p class="sub">Design fee = average of the checked methods × schedule multiplier. Add-ons are added on top. Uncheck methods that don't fit this project.</p>
+    <div class="row"><label style="margin:0">Schedule</label><div class="seg" id="exp">${Object.keys(S.settings.fee_model.expedite).map((k) => `<button class="${opts.expedite === k ? "on" : ""}" data-v="${k}">${k} ×${S.settings.fee_model.expedite[k].fee_multiplier}</button>`).join("")}</div></div>
+    <div id="methods" style="margin-top:12px"></div><div id="fw"></div>
+    <div class="row" style="margin-top:14px"><div style="width:220px">${field("ovr", "Design fee override ($)", opts.design_override || "", { type: "number", ph: "blank = use average" })}</div></div>
+    <div id="tot"></div>
+    <div class="actions"><button class="primary" id="saveFee">Save fee →</button></div></div>`;
+  const draw = (f) => {
+    const max = Math.max(...f.methods.map((m) => m.fee), 1);
+    $("#methods").innerHTML = f.methods.map((m) => `<div class="method ${m.available ? "" : "na"}">
+      <input type="checkbox" data-m="${m.key}" ${m.enabled ? "checked" : ""} ${m.available ? "" : "disabled"}>
+      <div><b>${esc(m.label)}</b><div class="d">${esc(m.detail)}</div></div>
+      <div class="bar"><i style="width:${(m.fee / max) * 100}%;${m.enabled ? "" : "background:#c5ccd6"}"></i></div>
+      <div class="num">${m.available ? money(m.fee) : "n/a"}</div></div>`).join("");
+    $("#fw").innerHTML = (f.warnings || []).map((w) => `<div class="warn">${esc(w)}</div>`).join("");
+    $("#tot").innerHTML = `<div class="card" style="background:var(--shade);margin-top:14px">
+      <div class="kv"><div>Average of methods</div><div class="mono">${money(f.base)}</div>
+      <div>× ${esc(f.expedite)}</div><div class="mono">${f.expedite_multiplier}${f.overridden ? " (override in effect)" : ""}</div>
+      <div>Design fee</div><div class="mono">${money(f.design_fee)}</div><div>Add-ons</div><div class="mono">${money(f.addon_fee)}</div>
+      ${f.per_sf ? `<div>Equivalent</div><div class="mono">$${f.per_sf.toFixed(2)}/SF${f.pct_of_construction ? ` · ${f.pct_of_construction.toFixed(2)}% of construction` : ""}</div>` : ""}</div>
+      <div class="total"><span>Proposal total</span><span class="v">${money(f.total)}</span></div></div>`;
+  };
+  const calc = (save = false) => guard(async () => {
+    const f = await act("estimate_fee", { project_no: p.project_no, methods: opts.methods, design_override: Number($("[name=ovr]").value || 0), expedite: opts.expedite, save });
+    draw(f); return f;
+  });
+  $("#methods").onchange = (e) => { if (e.target.dataset.m) { opts.methods[e.target.dataset.m] = e.target.checked; calc(); } };
+  $("#exp").onclick = (e) => { if (e.target.dataset.v) { opts.expedite = e.target.dataset.v; [...$("#exp").children].forEach((b) => b.classList.toggle("on", b === e.target)); calc(); } };
+  $("[name=ovr]").onchange = () => calc();
+  $("#saveFee").onclick = async () => { const f = await calc(true); if (f) { toast(`Fee saved: ${money(f.total)}`); await refresh(7); } };
+  calc();
+}
+
+// ── 7 Milestones
+function stepMilestones() {
+  const p = S.rec.project, existing = S.rec.milestones || [];
+  const avail = S.settings.milestones.available;
+  const sel = existing.length ? existing.map((m) => m.milestone) : S.settings.milestones.default;
+  $("#stepBody").innerHTML = `<div class="card"><h2>Milestones</h2><p class="sub">Dates default from the NTP date and the config schedule${p.expedite !== "Standard" ? `, compressed for <b>${esc(p.expedite)}</b>` : ""}. Billing defaults to the increment between milestones. Design fee: <b class="mono">${money(p.fee_design)}</b></p>
+    <div class="row">${avail.map((m) => `<label class="check" style="margin-right:12px"><input type="checkbox" class="ms" value="${m}" ${sel.includes(m) ? "checked" : ""}> ${m}%</label>`).join("")}
+    <div style="width:200px;margin-left:auto">${field("start", "NTP / start date", p.start_date, { type: "date" })}</div></div>
+    <div class="actions" style="justify-content:flex-start"><button id="recalc">Recalculate defaults</button></div>
+    <table style="margin-top:10px"><thead><tr><th>Milestone</th><th>Target date</th><th class="num">Billing %</th><th class="num">Amount</th><th>Note</th></tr></thead><tbody id="mrows"></tbody></table>
+    <div id="mw"></div><div class="actions"><button class="primary" id="saveMs">Save milestones →</button></div></div>`;
+  const drawRows = (rows) => {
+    $("#mrows").innerHTML = rows.map((r) => `<tr data-m="${r.milestone}"><td><b>${r.milestone}%</b></td><td><input type="date" data-k="date" value="${esc(r.target_date)}"></td>
+      <td class="num"><input type="number" data-k="pct" value="${r.billing_pct}" style="width:80px;text-align:right"></td><td class="num">${money(num(p.fee_design) * num(r.billing_pct) / 100)}</td>
+      <td><input data-k="note" value="${esc(r.note)}"></td></tr>`).join("");
+    const tot = rows.reduce((s, r) => s + num(r.billing_pct), 0);
+    $("#mw").innerHTML = Math.abs(tot - 100) > 0.01 ? `<div class="warn">Billing totals ${tot}%.</div>` : "";
+  };
+  drawRows(existing.length ? existing : []);
+  const gather = () => {
+    const rows = [...$("#mrows").querySelectorAll("tr")];
+    return { dates: Object.fromEntries(rows.map((r) => [r.dataset.m, r.querySelector("[data-k=date]").value])), billing_pct: Object.fromEntries(rows.map((r) => [r.dataset.m, Number(r.querySelector("[data-k=pct]").value)])), notes: Object.fromEntries(rows.map((r) => [r.dataset.m, r.querySelector("[data-k=note]").value])) };
+  };
+  const selected = () => [...document.querySelectorAll(".ms:checked")].map((i) => Number(i.value));
+  $("#recalc").onclick = () => guard(async () => {
+    const r = await act("set_milestones", { project_no: p.project_no, milestones: selected(), start_date: $("[name=start]").value || undefined });
+    drawRows(r.milestones); S.rec.milestones = r.milestones; toast("Defaults applied and saved");
+  });
+  if (!existing.length) $("#recalc").click();
+  $("#mrows").oninput = () => { const t = [...$("#mrows").querySelectorAll("[data-k=pct]")].reduce((s, i) => s + num(i.value), 0); $("#mw").innerHTML = Math.abs(t - 100) > 0.01 ? `<div class="warn">Billing totals ${t}%.</div>` : ""; };
+  $("#saveMs").onclick = () => guard(async () => {
+    const g = gather(), keep = selected();
+    const filt = (o) => Object.fromEntries(Object.entries(o).filter(([k]) => keep.includes(Number(k))));
+    const r = await act("set_milestones", { project_no: p.project_no, milestones: keep, start_date: $("[name=start]").value || undefined, dates: filt(g.dates), billing_pct: filt(g.billing_pct), notes: filt(g.notes) });
+    r.warnings.forEach((w) => toast(w, true)); toast("Milestones saved"); await refresh(8);
+  });
+}
+
+// ── 8 Proposal
+function stepProposal() {
+  const p = S.rec.project, f = S.rec.fee, l = S.rec.lead;
+  $("#stepBody").innerHTML = `<div class="card"><h2>Proposal</h2>
+    <div class="kv"><div>Client</div><div>${esc(S.rec.client?.company || S.rec.client?.contact_name || "— not linked")}</div>
+    <div>Scope lines</div><div>${(S.rec.scope || []).length}</div><div>Milestones</div><div>${(S.rec.milestones || []).map((m) => m.milestone + "%").join(", ") || "—"}</div>
+    <div>Total fee</div><div class="mono"><b>${money(f.total)}</b> (design ${money(f.design_fee)} + add-ons ${money(f.addon_fee)})</div>
+    <div>Last issued</div><div>${p.proposal_path ? `R${esc(p.proposal_rev)} on ${fmtDate(p.proposal_date)} — <span class="mono">${esc(p.proposal_path)}</span>` : "not yet"}</div></div>
+    ${!p.folder_path ? `<div class="warn">No project folder yet — the PDF will be saved to the app's data/proposals folder.</div>` : ""}
+    <div class="actions"><button id="pv">Preview</button><button class="primary" id="gen">Generate &amp; save ${p.proposal_path ? "R" + (Number(p.proposal_rev) + 1) : "R0"}</button>${p.proposal_path ? `<button id="open">Open saved PDF</button>` : ""}</div>
+    <div id="pdfwrap"></div></div>
+    ${p.proposal_path ? `<div class="card"><h2>Outcome</h2><p class="sub">Won projects go Active and are added to fee history for future comparables.</p>
+      <div class="row"><div style="width:200px">${field("final", "Final contract fee ($)", p.fee_total, { type: "number" })}</div><div style="flex:1">${field("onotes", "Notes", "")}</div></div>
+      <div class="actions"><button data-o="on_hold">On hold</button><button class="danger" data-o="lost">Lost</button><button class="primary" data-o="won" style="background:var(--ok);border-color:var(--ok)">Won ✓</button></div>
+      ${["Won", "Lost"].includes(l.status) ? `<div class="${l.status === "Won" ? "ok" : "warn"}">Recorded: ${esc(l.status)}</div>` : ""}</div>` : ""}`;
+  $("#pv").onclick = () => { $("#pdfwrap").innerHTML = `<iframe class="pdf" src="/api/preview/${encodeURIComponent(p.project_no)}?t=${Date.now()}"></iframe>`; };
+  $("#gen").onclick = () => guard(async () => {
+    const r = await act("generate_proposal", { project_no: p.project_no });
+    toast(`Saved R${r.revision}`); await refresh(8);
+    $("#pdfwrap").innerHTML = `<iframe class="pdf" src="/api/proposal/${encodeURIComponent(p.project_no)}?t=${Date.now()}"></iframe>`;
+  });
+  if ($("#open")) $("#open").onclick = () => window.open(`/api/proposal/${encodeURIComponent(p.project_no)}?t=${Date.now()}`, "_blank");
+  document.querySelectorAll("[data-o]").forEach((b) => b.onclick = () => guard(async () => {
+    await act("record_outcome", { project_no: p.project_no, outcome: b.dataset.o, final_fee: Number($("[name=final]").value) || undefined, notes: $("[name=onotes]").value });
+    toast("Outcome recorded"); await refresh(8);
+  }));
+}
+
+// ── Settings
+async function openSettings() {
+  S.settings = await act("get_settings");
+  const s = S.settings, fm = s.fee_model;
+  const rk = Object.keys(s.rates).filter((k) => !k.startsWith("_"));
+  $("#settingsBody").innerHTML = `<form id="sf">
+    <h3 style="margin-top:0">Paths</h3><div class="grid">${field("projects_root", "Projects root (local / network drive)", s.projects_root, { wide: true, ph: "P:\\\\Projects" })}</div>
+    <div class="sub">Workbook: <span class="mono">${esc(s.workbook_resolved)}</span></div>
+    <h3>Hourly rates ($/hr)</h3><div class="grid">${rk.map((k) => field("rate_" + k, k, s.rates[k], { type: "number" })).join("")}</div>
+    <h3>Fee model</h3><div class="grid">
+      ${field("sf_rate", "Area fee ($/SF)", fm.sf_rate, { type: "number" })}${field("value_per_sf", "Construction value ($/SF)", fm.value_per_sf, { type: "number" })}
+      ${field("structural_share_pct", "Structural share of DMS A/E fee (%)", fm.structural_share_pct, { type: "number" })}${field("historic_min_comps", "Min. historic comparables", fm.historic_min_comps, { type: "number" })}
+      ${field("round_to", "Round fees to ($)", fm.round_to, { type: "number" })}
+      ${Object.entries(fm.expedite).map(([k, v]) => field("exp_" + k, `${k}: fee × / schedule ×`, `${v.fee_multiplier} / ${v.schedule_factor}`)).join("")}
+    </div>
+    <h3>Advanced (JSON)</h3><p class="sub">Folder templates, deliverable catalog, project types, milestone weeks and proposal boilerplate.</p>
+    <textarea id="adv" style="min-height:260px;font:12px var(--mono)">${esc(JSON.stringify({ folder_templates: s.folder_templates, deliverable_types: s.deliverable_types, project_types: s.project_types, milestones: s.milestones, proposal: s.proposal, dms_curve: fm.dms_curve }, null, 2))}</textarea>
+    <div class="actions"><button class="primary">Save settings</button></div></form>`;
+  $("#sf").onsubmit = (e) => { e.preventDefault(); guard(async () => {
+    const a = Object.fromEntries([...e.target.querySelectorAll("[name]")].map((i) => [i.name, i.value.trim()]));
+    let adv; try { adv = JSON.parse($("#adv").value); } catch (err) { throw new Error("Advanced JSON is invalid: " + err.message); }
+    const expedite = Object.fromEntries(Object.keys(fm.expedite).map((k) => { const [f, sch] = a["exp_" + k].split("/").map((x) => Number(x.trim())); return [k, { fee_multiplier: f, schedule_factor: sch }]; }));
+    const { dms_curve, ...rest } = adv;
+    await act("update_settings", { patch: {
+      projects_root: a.projects_root,
+      rates: Object.fromEntries(rk.map((k) => [k, Number(a["rate_" + k])])),
+      fee_model: { sf_rate: Number(a.sf_rate), value_per_sf: Number(a.value_per_sf), structural_share_pct: Number(a.structural_share_pct), historic_min_comps: Number(a.historic_min_comps), round_to: Number(a.round_to), expedite, dms_curve },
+      ...rest,
+    } });
+    S.settings = await act("get_settings"); toast("Settings saved"); dlgSettings.close(); if (S.rec) render();
+  }); };
+  dlgSettings.showModal();
+}
+$("#btnSettings").onclick = () => guard(openSettings);
+
+(async () => { await guard(async () => { S.settings = await act("get_settings"); await loadPipeline(); }); })();
+</script>
+</body>
+</html>
