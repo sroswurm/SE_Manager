@@ -1,0 +1,29 @@
+From: Marisol Tran <mtran@palmettoline.example>
+To: engineer@examplestructural.example
+Date: Fri, 10 Apr 2026 08:52:30 -0400
+Subject: 618 King St - mezzanine in the old hardware building
+Attachments: PLA_618King_DD_2026-04-08.pdf (11.6 MB)
+
+Good morning,
+
+I need a fee for a commercial one. 618 King St, upper King, two-story masonry building from the early 1900s with retail on the ground floor and two apartments above (the apartments are a separate permit and not your problem). The retail tenant wants a mezzanine for storage and a small office, roughly 1,100 SF, and the ceiling height at the back of the store can take it.
+
+How I picture it, tell me if I'm wrong: steel framing with a composite deck floor, new columns that go through the existing slab onto their own footings, a stair, and a guardrail at the open edge. The beams will probably pocket into the brick on the east and west walls, and that's the part that worries me. Those walls are old, and nobody is going to be happy if the answer is "no, the brick can't take it."
+
+Existing building drawings: the city archive is pulling the 1962 renovation permit set for me. I'll forward it the minute they send it.
+
+What I'd like from you:
+
+- Sealed drawings and calcs for the mezzanine
+- A look at the existing masonry bearing walls and a short memo on what you found
+- A structural narrative at DD that I can hand to the owner's GC for pricing
+- Two site visits during construction
+
+We're in design development now and I'd like to submit for permit in late June. This one is high priority for us: the tenant's lease is contingent on a permit by July 31, so there isn't much slack anywhere in the schedule. Lump sum if you can, and the same hourly rate for anything we add later. Let me know what you need.
+
+Marisol
+
+Marisol Tran
+Principal, Palmetto Line Architecture
+212 Meeting St, 3rd Floor, Charleston SC 29401
+843-555-0118

@@ -1,0 +1,27 @@
+From: Jorge Castillo <jorge@topsealroofing.example>
+To: engineer@examplestructural.example
+Date: Tue, 12 May 2026 07:48:19 -0400
+Subject: Quote - re-roof attachment letter, Ashley Phosphate Rd warehouse
+Attachments: TopSeal_7395AP_roof_plan_markup.pdf (1.4 MB)
+
+Mr. engineer,
+
+Never worked together before. Craig at Harborline Roofing Products gave me your name and said you write the attachment letters for our fastener patterns. I'm an estimator at TopSeal Roofing, we do commercial re-roofs.
+
+Job is 7395 Ashley Phosphate Rd, North Charleston. Warehouse, about 42,000 SF, steel framed pre-engineered building. We are tearing the old built-up roof off down to the steel deck and putting back a 60 mil mechanically attached single-ply membrane over new insulation. The City of North Charleston permit desk told us they want a sealed letter with the wind uplift numbers and a fastener pattern before they will issue.
+
+What I need:
+
+- Uplift pressures by roof zone (field, perimeter, corner)
+- Fastener spacing for each zone, based on the manufacturer's pull-out numbers
+- Edge metal attachment, they say it has to meet ES-1
+- A sealed letter for the permit
+
+I marked up the roof plan, attached. I don't know the deck gauge yet. I'm having someone pull core photos tomorrow morning.
+
+Can you give me one number? Material goes on order next week and we want to start June 1, so I need the letter by around the 22nd.
+
+Jorge Castillo
+Estimator, TopSeal Roofing Systems
+4120 Azalea Dr, North Charleston SC 29405
+843-555-0288

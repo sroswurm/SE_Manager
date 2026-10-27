@@ -1,0 +1,31 @@
+From: Priya Venkataraman <priya@ashleyriverhosp.example>
+To: engineer@examplestructural.example
+Cc: Owen Pruitt <owen@saltmarshdesign.example>
+Date: Thu, 20 Aug 2026 14:15:28 -0400
+Subject: Guest annex at Ashley River Inn - structural proposal request
+Attachments: SDS_ARInn_Annex_SD_2026-08-18.pdf (15.7 MB), ARInn_geotech_2026-03.pdf (6.1 MB)
+
+Hello,
+
+I'm the development manager for Ashley River Hospitality. We own two small inns in West Ashley and we're adding a guest annex behind the one at 1950 Savannah Hwy. Owen Pruitt at Saltmarsh Design Studio is our architect (he's copied) and he recommended you. This is our first project with your firm.
+
+The annex is a new two-story building with 12 guest rooms, about 7,800 SF. Owen's SD set is attached and the geotech from March is too. From his drawings:
+
+- Light-gauge steel bearing walls with a composite steel floor
+- Steel joist roof
+- Exterior covered walkways on both floors
+- A site retaining wall on the north side, up to about 4 ft
+
+We need structural engineering for the whole building: sealed drawings and calcs, Division 03 and 05 specs, shop drawing review, and construction administration through completion.
+
+Timeline: our board approves the budget on October 20. We want to submit for permit in early December and break ground in March. To get this into the board packet I need a proposal by September 15.
+
+I'd like a lump sum for the design and some structure for construction administration, since I know that part is hard to predict. Billing goes to our controller, Marcus Bell, at ap@ashleyriverhosp.example.
+
+Thank you,
+Priya
+
+Priya Venkataraman
+Development Manager, Ashley River Hospitality LLC
+1890 Sam Rittenberg Blvd, Suite 210, Charleston SC 29407
+843-555-0405
