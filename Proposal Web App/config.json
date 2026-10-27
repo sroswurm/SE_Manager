@@ -1,0 +1,580 @@
+{
+  "_readme": "Edit paths and rates here, or from the Settings page in the web app. Values marked VERIFY are placeholders.",
+  "workbook": "./data/TNSE_Projects.xlsx",
+  "projects_root": "./data/Projects",
+  "proposal_folder": "02_Contract & Proposal",
+  "web_port": 4180,
+  "firm": {
+    "name": "True North Structural Engineering, LLC",
+    "short": "TNSE",
+    "address1": "2608 Wallace Lake Rd.",
+    "address2": "Pace, FL 32571",
+    "phone": "850.696.6784",
+    "email": "jacob@truenorthstructuraleng.com",
+    "web": "truenorthstructuraleng.com",
+    "coa": "FL Certificate of Authorization No. 36287",
+    "signer_name": "Jacob Sumrall, M.S., P.E.",
+    "signer_title": "Principal",
+    "licensed_states": [
+      "AL",
+      "AR",
+      "AZ",
+      "FL",
+      "GA",
+      "KY",
+      "LA",
+      "MS",
+      "NC",
+      "WI"
+    ]
+  },
+  "rates": {
+    "engineering": 125,
+    "eit": 95,
+    "drafting": 75,
+    "admin": 55,
+    "_note": "VERIFY eit / drafting / admin. engineering = $125/hr from your fee calculator."
+  },
+  "fee_model": {
+    "sf_rate": 1.75,
+    "value_per_sf": 225,
+    "structural_share_pct": 20,
+    "historic_min_comps": 3,
+    "historic_sf_band": [
+      0.33,
+      3
+    ],
+    "round_to": 50,
+    "expedite": {
+      "Standard": {
+        "fee_multiplier": 1,
+        "schedule_factor": 1
+      },
+      "Expedited": {
+        "fee_multiplier": 1.25,
+        "schedule_factor": 0.7
+      },
+      "Rush": {
+        "fee_multiplier": 1.5,
+        "schedule_factor": 0.5
+      }
+    },
+    "dms_curve": [
+      {
+        "budget": 100000,
+        "pct": 11
+      },
+      {
+        "budget": 250000,
+        "pct": 10.2
+      },
+      {
+        "budget": 500000,
+        "pct": 9.5
+      },
+      {
+        "budget": 1000000,
+        "pct": 8.5
+      },
+      {
+        "budget": 2000000,
+        "pct": 7.8
+      },
+      {
+        "budget": 5000000,
+        "pct": 7
+      },
+      {
+        "budget": 10000000,
+        "pct": 6.5
+      },
+      {
+        "budget": 25000000,
+        "pct": 6
+      },
+      {
+        "budget": 50000000,
+        "pct": 5.6
+      }
+    ]
+  },
+  "project_types": [
+    {
+      "name": "New Building Design",
+      "dms_factor": 1,
+      "area_methods": true
+    },
+    {
+      "name": "PEMB Foundation / Building",
+      "dms_factor": 0.85,
+      "area_methods": true
+    },
+    {
+      "name": "Addition / Renovation",
+      "dms_factor": 1.15,
+      "area_methods": true
+    },
+    {
+      "name": "CFS Delegated Design",
+      "dms_factor": 0.85,
+      "area_methods": true
+    },
+    {
+      "name": "Public Safety / Assembly",
+      "dms_factor": 1.15,
+      "area_methods": true
+    },
+    {
+      "name": "Structural Assessment",
+      "dms_factor": 1,
+      "area_methods": false
+    },
+    {
+      "name": "Repair Design",
+      "dms_factor": 1,
+      "area_methods": false
+    },
+    {
+      "name": "Retaining Wall",
+      "dms_factor": 1,
+      "area_methods": false
+    },
+    {
+      "name": "Sign / Pole Foundation",
+      "dms_factor": 1,
+      "area_methods": false
+    },
+    {
+      "name": "Engineering Letter",
+      "dms_factor": 1,
+      "area_methods": false
+    },
+    {
+      "name": "Third-Party / Plan Review",
+      "dms_factor": 1,
+      "area_methods": false
+    },
+    {
+      "name": "Other",
+      "dms_factor": 1,
+      "area_methods": false
+    }
+  ],
+  "deliverable_types": [
+    {
+      "type": "Structural Drawings",
+      "pool": "design",
+      "basis": "hourly",
+      "rate": "engineering",
+      "hours": 24
+    },
+    {
+      "type": "Structural Calculations",
+      "pool": "design",
+      "basis": "hourly",
+      "rate": "engineering",
+      "hours": 16
+    },
+    {
+      "type": "Drafting",
+      "pool": "design",
+      "basis": "hourly",
+      "rate": "drafting",
+      "hours": 24
+    },
+    {
+      "type": "Engineering Letter",
+      "pool": "design",
+      "basis": "hourly",
+      "rate": "engineering",
+      "hours": 3
+    },
+    {
+      "type": "Assessment Report",
+      "pool": "design",
+      "basis": "hourly",
+      "rate": "engineering",
+      "hours": 10
+    },
+    {
+      "type": "Site Visit / Field Observation",
+      "pool": "addon",
+      "basis": "each",
+      "rate": "engineering",
+      "hours": 3,
+      "unit": "visit"
+    },
+    {
+      "type": "Special Inspection",
+      "pool": "addon",
+      "basis": "each",
+      "rate": "engineering",
+      "hours": 3,
+      "unit": "inspection"
+    },
+    {
+      "type": "Construction Administration (RFIs/Submittals)",
+      "pool": "addon",
+      "basis": "hourly",
+      "rate": "engineering",
+      "hours": 8
+    },
+    {
+      "type": "Delegated Design / Shop Drawing Review",
+      "pool": "addon",
+      "basis": "each",
+      "rate": "engineering",
+      "hours": 2,
+      "unit": "submittal"
+    },
+    {
+      "type": "Other",
+      "pool": "design",
+      "basis": "lump",
+      "rate": "engineering",
+      "hours": 0
+    }
+  ],
+  "milestones": {
+    "available": [
+      35,
+      50,
+      75,
+      100
+    ],
+    "default": [
+      35,
+      50,
+      75,
+      100
+    ],
+    "weeks_from_ntp": {
+      "35": 2,
+      "50": 3,
+      "75": 5,
+      "100": 7
+    }
+  },
+  "folder_templates": [
+    {
+      "name": "01_Correspondence",
+      "default": true,
+      "children": [
+        "Email",
+        "Meeting Notes"
+      ]
+    },
+    {
+      "name": "02_Contract & Proposal",
+      "default": true,
+      "children": []
+    },
+    {
+      "name": "03_Client Documents",
+      "default": true,
+      "children": [
+        "Architectural",
+        "Survey",
+        "Geotechnical",
+        "MEP"
+      ]
+    },
+    {
+      "name": "04_Design",
+      "default": true,
+      "children": [
+        "Calculations",
+        "Models",
+        "References"
+      ]
+    },
+    {
+      "name": "05_Revit",
+      "default": true,
+      "children": [
+        "Backups",
+        "Families"
+      ]
+    },
+    {
+      "name": "06_CAD",
+      "default": false,
+      "children": [
+        "Xrefs"
+      ]
+    },
+    {
+      "name": "07_Issued Drawings",
+      "default": true,
+      "children": [
+        "35%",
+        "50%",
+        "75%",
+        "100%",
+        "Permit Set",
+        "Revisions"
+      ]
+    },
+    {
+      "name": "08_Submittals",
+      "default": true,
+      "children": [
+        "Received",
+        "Reviewed"
+      ]
+    },
+    {
+      "name": "09_RFIs",
+      "default": false,
+      "children": []
+    },
+    {
+      "name": "10_Inspections",
+      "default": true,
+      "children": [
+        "Field Reports",
+        "Photos"
+      ]
+    },
+    {
+      "name": "11_Reports & Letters",
+      "default": true,
+      "children": []
+    },
+    {
+      "name": "12_Invoices",
+      "default": true,
+      "children": []
+    },
+    {
+      "name": "13_Photos",
+      "default": false,
+      "children": []
+    }
+  ],
+  "seed_files": [
+    {
+      "_example": "Copy your Revit template into new projects",
+      "from": "",
+      "to": "05_Revit"
+    }
+  ],
+  "proposal": {
+    "validity_days": 30,
+    "intro": "True North Structural Engineering, LLC (TNSE) is pleased to submit this proposal to provide structural engineering services for the project described below.",
+    "default_assumptions": [
+      "Architectural drawings and a geotechnical report (where required) will be furnished by the client.",
+      "Design will be in accordance with the governing edition of the Florida Building Code and referenced standards, unless otherwise noted.",
+      "One round of minor revisions in response to building department comments is included."
+    ],
+    "default_exclusions": [
+      "Civil, MEP, architectural, and geotechnical engineering.",
+      "Delegated design of components by others (e.g., trusses, pre-engineered metal building systems), unless listed in the scope.",
+      "Changes in scope after a milestone has been issued; these will be billed as additional services."
+    ],
+    "terms": [
+      "Invoices are issued at each milestone and for add-on services as performed; payment is due within 30 days.",
+      "Additional services beyond this scope will be performed on an hourly basis at the rates listed, with prior authorization.",
+      "This proposal is valid for the period stated above. Work begins upon receipt of signed acceptance."
+    ]
+  },
+  "email_parser": {
+    "_readme": "Keyword rules used to read pasted emails. Lowercase; first project type with the highest score wins.",
+    "ignore_domains": [
+      "truenorthstructuraleng.com",
+      "tnstructural.com"
+    ],
+    "ignore_phones": [
+      "8506966784"
+    ],
+    "type_keywords": {
+      "PEMB Foundation / Building": [
+        "pemb",
+        "pre-engineered",
+        "preengineered",
+        "metal building",
+        "steel building",
+        "butler",
+        "varco",
+        "nucor building"
+      ],
+      "CFS Delegated Design": [
+        "cold-formed",
+        "cold formed",
+        "cfs",
+        "metal stud",
+        "light gauge",
+        "delegated design",
+        "deferred submittal"
+      ],
+      "Structural Assessment": [
+        "assessment",
+        "evaluate",
+        "evaluation",
+        "condition",
+        "inspect the",
+        "inspection of",
+        "cracking",
+        "cracks",
+        "settlement",
+        "damage",
+        "storm damage",
+        "hurricane damage",
+        "termite",
+        "rot"
+      ],
+      "Repair Design": [
+        "repair",
+        "repairs",
+        "fix",
+        "replace the",
+        "shoring",
+        "sistering"
+      ],
+      "Retaining Wall": [
+        "retaining wall",
+        "seawall",
+        "sea wall",
+        "mse wall",
+        "block wall"
+      ],
+      "Sign / Pole Foundation": [
+        "sign",
+        "signage",
+        "monument",
+        "pole",
+        "flagpole",
+        "light pole",
+        "pylon",
+        "kiosk"
+      ],
+      "Engineering Letter": [
+        "letter",
+        "engineer's letter",
+        "affidavit",
+        "certification letter",
+        "sealed letter"
+      ],
+      "Third-Party / Plan Review": [
+        "plan review",
+        "third party",
+        "third-party",
+        "peer review",
+        "review of the drawings"
+      ],
+      "Addition / Renovation": [
+        "addition",
+        "renovation",
+        "remodel",
+        "alteration",
+        "tenant improvement",
+        "build-out",
+        "buildout",
+        "expansion",
+        "enlarge",
+        "widening"
+      ],
+      "Public Safety / Assembly": [
+        "fire station",
+        "police",
+        "ems",
+        "church",
+        "sanctuary",
+        "fellowship hall",
+        "school",
+        "gymnasium",
+        "auditorium",
+        "assembly"
+      ],
+      "New Building Design": [
+        "new building",
+        "new construction",
+        "ground-up",
+        "ground up",
+        "new home",
+        "new residence",
+        "new structure",
+        "foundation design"
+      ]
+    },
+    "deliverable_keywords": {
+      "Structural Drawings": [
+        "drawings",
+        "plans",
+        "sealed plans",
+        "signed and sealed",
+        "permit set",
+        "construction documents",
+        "cds",
+        "details"
+      ],
+      "Structural Calculations": [
+        "calculations",
+        "calcs",
+        "calc package",
+        "design",
+        "analysis"
+      ],
+      "Engineering Letter": [
+        "letter",
+        "affidavit"
+      ],
+      "Assessment Report": [
+        "report",
+        "assessment",
+        "evaluation",
+        "findings"
+      ],
+      "Special Inspection": [
+        "inspection",
+        "inspections",
+        "special inspection",
+        "threshold"
+      ],
+      "Site Visit / Field Observation": [
+        "site visit",
+        "site visits",
+        "field observation",
+        "observe",
+        "walk the site",
+        "come out"
+      ],
+      "Construction Administration (RFIs/Submittals)": [
+        "construction administration",
+        "rfis",
+        "rfi",
+        "contract administration"
+      ],
+      "Delegated Design / Shop Drawing Review": [
+        "shop drawing",
+        "shop drawings",
+        "submittal review",
+        "truss drawings",
+        "review submittals"
+      ]
+    },
+    "rush_keywords": [
+      "rush",
+      "emergency",
+      "tomorrow",
+      "within 24",
+      "by end of day",
+      "eod",
+      "same day"
+    ],
+    "expedite_keywords": [
+      "asap",
+      "as soon as possible",
+      "urgent",
+      "expedite",
+      "expedited",
+      "quick turnaround",
+      "fast track",
+      "fast-track",
+      "tight schedule",
+      "this week",
+      "next week"
+    ],
+    "auto_bid_default": true
+  }
+}

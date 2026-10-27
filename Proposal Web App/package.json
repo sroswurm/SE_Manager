@@ -1,0 +1,20 @@
+{
+  "name": "tnse-project-manager",
+  "version": "1.0.0",
+  "description": "TNSE new-project lifecycle: RFP intake to proposal PDF. MCP server + local web app on an Excel workbook.",
+  "main": "src/mcp-server.js",
+  "scripts": {
+    "web": "node src/web-server.js",
+    "mcp": "node src/mcp-server.js",
+    "init": "node src/init.js"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "exceljs": "^4.4.0",
+    "express": "^5.3.0",
+    "pdfkit": "^0.20.2",
+    "zod": "^4.6.7"
+  },
+  "private": true
+}

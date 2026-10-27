@@ -1,0 +1,23 @@
+Proposal generation
+Invoice generation
+Administrative 
+Collections
+Drafting & Revit
+QC Review
+
+Client information
+Scope of Work
+Fee proposal
+General Terms and Conditions
+Proposal tracking (accepted vs not started)
+Identifying who to invoice upon a level of completion of work
+
+Project lifecycle - MCP
+RFQ from customer - phone, text & email
+Choose to bid or not to bid (if no bid, stop; if bid continue)
+Customer creation, if new client
+File folder generation (select folders you would like to include)
+Define deliverables / scope of work
+Fee based on estimated hours, square footage, historic data and information, expedited schedule, per inspection
+(Drawings, calculations, inspections, engineering letter & reports, drafting)
+Identifying milestones (35%, 50%, 75%, 100%)

@@ -1,0 +1,40 @@
+import { z } from "zod";
+import Fuse from "fuse.js";
+import { readTable } from "../storage.js";
+export function registerSearchClients(server) {
+    server.tool("search_clients", "Search for existing clients by name (fuzzy match). Use this before create_project to check if a client already exists.", {
+        query: z.string().describe("Client name or partial name to search for"),
+        limit: z.number().optional().default(5).describe("Maximum results to return"),
+    }, async ({ query, limit }) => {
+        const clients = await readTable("clients.json");
+        if (clients.length === 0) {
+            return {
+                content: [{
+                        type: "text",
+                        text: JSON.stringify({ matches: [], total: 0, message: "No clients in the system yet." }, null, 2),
+                    }],
+            };
+        }
+        const fuse = new Fuse(clients, {
+            keys: ["name", "contactName"],
+            threshold: 0.4,
+            includeScore: true,
+        });
+        const results = fuse.search(query, { limit });
+        return {
+            content: [{
+                    type: "text",
+                    text: JSON.stringify({
+                        matches: results.map((r) => ({
+                            id: r.item.id,
+                            name: r.item.name,
+                            contactName: r.item.contactName,
+                            contactEmail: r.item.contactEmail,
+                            score: r.score,
+                        })),
+                        total: results.length,
+                    }, null, 2),
+                }],
+        };
+    });
+}
